@@ -1,0 +1,3670 @@
+use MyDatabase
+
+select * from customers
+--this is commenrs
+/*multi line comment*/
+--retrive all data
+select *from orders
+--we new only few columns data from table
+select id,
+	first_name 
+	from customers
+
+select order_date,sales
+from orders
+
+--where clause -it is condition -filter data based on a condition
+select first_name,country,score 
+from customers
+where score>=500
+
+select *
+from customers
+where score!=00
+
+select *
+from customers
+where country='germany'
+
+select first_name, country
+from customers
+where country='germany'
+
+--order by - for sor the data -default is asc- small to low, desc
+
+select *
+from customers
+order by score asc
+select *
+from customers
+order by score desc
+--now i want score which is more than 500 plus i need to order also my data in high to low
+
+select *
+from customers 
+where score>=500
+order by score desc
+
+select *
+from customers 
+where score>=500
+order by score 
+
+select *
+from customers 
+where score>=500
+order by country
+--nested sorting sort by multiple columns
+select *
+from customers
+order by country asc,--but we need our score also in high to low 
+		 score desc
+
+---Group by -combines rows with the same value ,aggregates a column by another columns -total score by country
+
+select country,sum(score) as Total_score --using as we give new name to the columns  
+from customers
+group by country--GROUP BY is especially useful when a column contains duplicate values, 
+--because it combines rows with the same value into one group.
+
+--we need total score and total number of customers for each country
+--all agregate functions--sum()-add numeric value
+--count()-count rows and no -null value
+--avg- calculate average
+--min()-finds the smallest value
+---max()-finds the larghest value
+select *from customers
+select country, sum(score) as Total_score,count(first_name) as Total_customers
+from customers
+where score>100
+group by country
+order by Total_score asc
+
+
+--having clause-filtering data after aggregation data
+select *from customers
+select country, sum(score) as Total_score,count(first_name) as Total_customers
+from customers
+where score>350
+group by country
+having sum(score)>800
+order by Total_score asc
+
+--#find the average score for each country considerng only customers with as score not
+--equal to 0 and return only those countries with an average score greater than 430
+select *from customers
+select country,avg(score) as avg_score,count(first_name)
+from customers
+where score!=0
+group by country
+having avg(score)>430
+order by avg_score desc
+
+
+--distnict--remove duplicates (repeated values, each value appears only once)
+select distinct country
+from customers
+---order to perform task-select,distinct,top,from,where,group by, having by,order by
+--top 3-how many row you you want
+select top 3*
+from customers
+
+--retrive the top 3 customers with the highest scores
+select *from customers
+select top 3*
+from customers
+order by score desc
+
+select *from orders
+select top 2* from orders
+order by order_date desc
+
+--coding order
+--select,distinct,top no_of_rows,aggregate function,from,where,group by, having by,order by
+--select we use for filter columns,
+--distinct use for filter duplicate
+--top num_of_rows use for filter result rows
+--where filter rows before aggregation
+--having -filter rows after aggregation
+
+
+--execute order--
+--1.from -fetch table fromthe databse first
+--2. where condtion
+--3 group by -apply first filter 
+--4.having-anoter filter
+--5. select ditinct
+--6. order by
+---7 top lastly apply
+
+--in another plateform we add; after query end , but in sql server it is not mandantory
+--static value
+
+select 123;
+select 123 as static_number
+select 'hello' as Hello
+
+select id, first_name,'new_cutomer' as New_customer from customers
+
+--Data defination language--create ,alter,drop
+create table persons (id int not null,person_name varchar(100) not null, birth_date date, 
+phone varchar(12) not null,
+constraint pk_persons primary key(id) )
+
+INSERT INTO persons (id, person_name, birth_date, phone)
+VALUES (1, 'Harshika', '20101009', '234-567-8901');
+select * from persons
+
+alter table persons --this query only wrok when table is empty and newly added column add in last
+add email varchar(100) not null
+
+alter table persons ---here we drop or delete column
+drop column phone
+
+drop table persons--here we delete the whole table
+
+---Data manipulation lanaguage(insert, update,delete)
+--1.
+INSERT INTO persons (id, person_name, birth_date, phone)
+VALUES (1, 'Harshika', '20101009', '234-567-8901');
+select * from persons
+
+INSERT INTO persons (id, person_name, birth_date, phone)
+VALUES (2, 'vinay', '20101009', '234-567-8901');
+select * from persons
+--2.
+INSERT INTO persons 
+VALUES (3, 'vinay', '20101009', '234-567-8901');
+select * from persons
+--3.
+INSERT INTO persons (id, person_name, birth_date, phone)
+VALUES (5, 'vinaya', '20101009', '234-567-8901'),
+       (4, 'vina', '20101009', '234-567-8901'),
+	   (3, 'vinay', '20101009', null);
+
+INSERT INTO persons 
+VALUES (6, 'vinay', null, '234-567-8901');
+--4.
+INSERT INTO persons (id,person_name,phone)-- we excluded here nullable columns this all are not null column so i add here , 
+VALUES (8, 'vinay8','234-567-8901');											--but birthdate is null
+select * from persons
+
+
+--now we get our desire data from our source table using select query
+---now we need to insert our result table in to the target table
+
+--copy data from customers table in to persons
+/*so nthis query write based on traget table field for example here person_name and first_name , third taget table has birth_date but 
+yhis table has no birtdate so for that we put put null because in bith date null is allowed
+while phone is also not presented in source table plus null is also not allowed,so we add static value here */
+--after writing the select query put that query inside the insert query to insert in target table
+insert into persons (id, person_name, birth_date, phone)
+select id, first_name,null,'unknown'
+from customers
+select * from persons
+
+--update table_name
+--set col1=val,
+--	col2=val
+
+update customers
+set score=0
+where id=4 12345678
+
+select * from customers
+--change the score of customer with id 4 t0 0 and upadte the country to uk
+
+update customers
+set score=0,
+country='UK'
+where id=4
+select * from customers
+
+update customers
+set score=0
+where score is null
+select * from customers
+
+update customers
+set country='unknown'
+where country is null
+select * from customers
+
+delete from customers
+where id>6
+
+truncate table persons--truncate-make table empty
+select * from persons
+
+---where operators--comparison operators-(=,<>,=!,>,<,>=,<=)
+				----logical operators-AND,OR,not
+				----range operator-between
+				---memebrship operator--in,not in
+				---search operator--like
+--1. comparision operator-expression operator expression
+--col1=col2 firstname=last name
+--col1=value firstname='john'
+--function =value upper(first_name)='JOHN'
+--expressim=value price*quantity=1000
+--subquery=value select avg(sales) from orders=1000
+--get all customers who are from germamy
+select * from customers
+where country='germany'
+select * from customers
+where country!='germany'
+select * from customers
+where country='usa' and score>500
+update customers 
+set score=550
+where score=0
+select * from customers
+where country='usa' or score>500
+
+select * from customers
+where not country='usa' 
+
+select * from customers
+where not score>500
+
+select * from customers
+where score between 100 and 550--value within in range
+
+select * from customers 
+where country in ('germany','usa')
+
+select * from customers 
+where country not in ('germany','usa')
+
+--like ---% means anythin,undescore_ exact 1 , for example we can wrire _mn%,
+--so start from any char but after that we want amn% ,% means anythiny
+
+select *from customers
+where first_name like 'Ma%'
+
+select *from customers
+where first_name like '_ar%'
+select *from customers
+where first_name like '%n'
+
+
+--table A and table B --how we combine the tables -rows or columns 
+--columns --we used joins-join table by side by side
+		----joins types-inner join, full join, left join,right join
+--for rows- used set operators
+		----types of set--union, union all,except (minus),intersect
+/* what is joins--we need a key or common columns who able to join two tables for example mostly id is common column 
+when to use joins-- recombine data --order to see a big result for example customer data store in diffrent 4 tables so we 
+we need to combine those tables 
+2-data enrichment -getting extra data-customers is master table and zipcodes -reference table 
+combine two tables enhanced customers --add extra info 
+3..check for existence-filtering -in customers data has to be checked-filtering the data based on joins 
+left table A and right side table is B 
+1.matchind data from the both tables-menas common data
+2. all data from table A
+3. unmatching data from table A which is only in a and excluded common data of both tables
+basics--no join,inner join,left join,right join,full join
+advanced-left anti join,right anti join,full anti join,cross join
+multi tables-2 x inner joins,2 X left joins, Inner+left joins
+
+
+no join-return data from tables without combining them --table a and table b see everything -get two table
+*/
+select *from customers;--this no joins
+select *from orders
+delete from customers where id=6
+--inner join--return only matching rows from both tables
+select *from customers inner join orders 
+on customers.id=orders.customer_id
+
+select c.id , c.first_name,o.order_id,o.sales from customers as c inner join orders as o
+on c.id=o.customer_id
+--LEFT JOIN Keep every row from the left table, plus the matches.
+select c.id , c.first_name,o.order_id,o.sales from customers as c left join orders as o
+on c.id=o.customer_id
+--RIGHT JOIN Keep every row from the right table, plus the matches.
+select c.id , c.first_name,o.order_id,o.sales from customers as c right join orders as o
+on c.id=o.customer_id
+--FULL JOIN Keep every row from both tables.
+select c.id , c.first_name,o.order_id,o.sales from customers as c full join orders as o
+on c.id=o.customer_id
+--CROSS JOIN Combine every row with every row.
+select c.id , c.first_name,o.order_id,o.sales from customers as c cross join orders as o
+
+--Left Anti JOIN-return only unmatching rows from the left table
+--The anti join answers one question: what has no match? A left row without a match has NULL in the B key, and the
+--WHERE keeps only those rows.
+--get all costomers who have not place any oder
+select c.id , c.first_name,o.order_id,o.sales from customers as c left join orders as o
+on c.id=o.customer_id where o.customer_id is null
+
+--Right Anti JOIN--return only unmatching rows from the right table
+--Only the rows from the right table that have no match on the left. In the book's tables: order 1004, whose customer 6
+--does not exist.
+--get all orders withput matching customers
+select c.id , c.first_name,o.customer_id,o.order_id,o.sales from customers as c right join orders as o
+on c.id=o.customer_id where c.id is null
+--here i just change the order of tables and get same output like above (right anti join)and using left anti join
+select c.id , c.first_name,o.customer_id,o.order_id,o.sales from orders as o left join customers as c
+on c.id=o.customer_id where c.id is null
+
+--Full Anti JOIN--return unmatching rows from the both the tables
+--Only the rows from both tables that have no match on the other side.
+--r
+select c.id , c.first_name,o.customer_id,o.order_id,o.sales from customers as c full join orders as o
+on c.id=o.customer_id where c.id is null or o.customer_id is null
+
+--CROSS JOIN--table 1 rows X table 2 rows -5X4=20
+--No key, no matching: every row meets every row. Count before you run it.
+select c.id , c.first_name,o.order_id,o.sales from customers as c cross join orders as o
+
+--get all customers along with their orderes, but only for customers who have placed an order( without using inner join)
+select * from customers as c full join orders as o on
+c.id=o.customer_id where c.id is not null and o.customer_id is not null
+
+select * from customers as c left join orders as o on
+c.id=o.customer_id where o.customer_id is not null
+
+--where which join we use
+--------if we want only matching data we used- inner join
+	----if all rows i want from the one side master table -left join
+	 -- if all rows i want both sides than i- do full join
+	 --for unmatching data we used anti join -for one side we used-left anti join
+	 -----------------------------------------for both side we want we used-full anti join
+
+/*my favorite is left join
+select * from A 
+left B on
+left c on
+where control what to keep in table*/
+
+--task using sales DB,retrives a list of all orders, along with the related customer,product and employes deatails,
+--for each order,display order id , customername
+---product name ,sales,pricr, sales persons name
+
+use SalesDB
+select *from Sales.Customers
+select *from Sales.Employees
+select *from Sales.Orders
+select *from Sales.Products
+
+select o.OrderID ,c.FirstName as CustomerName,p.Product,o.Sales,p.Price,e.FirstName as SalesPersonName
+from Sales.Orders as o  join  Sales.Customers as c
+on c.CustomerID=o.CustomerID  join Sales.Products as p
+on o.ProductID=p.ProductID  join Sales.Employees as e
+on o.SalesPersonID=e.EmployeeID
+
+
+---set operation--here we combine rows
+--number of columns in each query should be same,there order, there datatype also same if first col datatype is varchar 
+--than in another query first col datatype should be varchar if it int give the error
+/*UNION Stack two results and remove the duplicates.
+UNION ALL Stack two results and keep the duplicates.
+EXCEPT Keep the first result minus the second.
+INTERSECT Keep only the rows both results share.*/
+
+select c.FirstName as first_nam,c.LastName from Sales.Customers as c 
+union--from the first query it take column name and order by we alswys with last query
+select e.FirstName as First_name,e.LastName from Sales.Employees as e order by FirstName
+
+select c.FirstName,c.LastName from Sales.Customers as c
+union all--it same like above only it allows duplicate
+select e.FirstName,e.LastName from Sales.Employees as e order by FirstName
+
+
+select c.FirstName,c.LastName from Sales.Customers as c
+except--here table A means customers all data would display which not present in table B-employess
+select e.FirstName,e.LastName from Sales.Employees as e
+
+
+select e.FirstName,e.LastName from Sales.Employees as e
+except--here i just changethe order i first put employess and after Customer so emp all data display which is not present in B
+select c.FirstName,c.LastName from Sales.Customers as c
+
+
+select c.FirstName,c.LastName from Sales.Customers as c
+intersect--this display only common rows between two tables-if i change the order  like above than also we get same result 
+--because we display common data
+select e.FirstName,e.LastName from Sales.Employees as e
+
+select e.FirstName,e.LastName from Sales.Employees as e
+intersect
+select c.FirstName,c.LastName from Sales.Customers as c
+
+
+-------when we use set in real projet
+--1. combine similar infromation before analzying the data
+--2.database developer divide the data into multiple tables to optimize performance and archieve old data
+--for example i have table which contains diiferent year data but all in one table so seperate them by year wise
+--3.delta detection-identifying the difference or changes(delta) between two batches of data-for that we use Except
+--4. data completenes check-except operators can be used to compare tables to detect discrepancies between databases
+--task--orders data stored in seperate tables orders and ordersArchieve -combine all orders data into one report
+--without duplicates
+
+select 
+'orders' as SourceTable,--here i add new column Source Table nd it  values is Orders
+[OrderID]
+      ,[ProductID]
+      ,[CustomerID]
+      ,[SalesPersonID]
+      ,[OrderDate]
+      ,[ShipDate]
+      ,[OrderStatus]
+      ,[ShipAddress]
+      ,[BillAddress]
+      ,[Quantity]
+      ,[Sales]
+      ,[CreationTime]
+from Sales.Orders--never use astrick here because many times developer add or remove some field from the tables and it gives error 
+--so for that always add column name there, click on right click on tables and 
+--select 1000 rows from there copy all column name
+union 
+select
+'ordersArchive' as SourceTable,
+[OrderID]
+      ,[ProductID]
+      ,[CustomerID]
+      ,[SalesPersonID]
+      ,[OrderDate]
+      ,[ShipDate]
+      ,[OrderStatus]
+      ,[ShipAddress]
+      ,[BillAddress]
+      ,[Quantity]
+      ,[Sales]
+      ,[CreationTime]
+from Sales.OrdersArchive
+order by OrderID
+
+
+--Row level functions is used for clean, analayze, manipulate and transformation of data
+--functions means --a build in sql code--accepsts an input value , process it and returns an output value
+--. Row-level vs aggregate functions
+/*Feature	   Row-level (scalar)function	          Aggregate function
+Operates   on Values within an individual row	  Values across multiple rows
+Examples   UPPER(), LOWER(), LEN(), ROUND()	      SUM(), AVG(), COUNT(), MAX()
+Typicaloutput One result per input row	          One result per group or query
+Example	   UPPER(first_name)	                  AVG(score)
+*/
+
+--single row function-one input get one output for example is upper-row level functions
+            --(string,numeric,date and time,null)functions
+--multiple row function -multiple input , return one output ex.. sum,avg,count-aggragate functions,widow functions
+
+--nested functions-function used inside another function
+
+--maria-->left(s)---'Ma'-lower-->'ma'
+--len(lower(left('Maria',2)))==>output-2-this called nested function
+
+
+-------String functions--there are 3 category 
+--1.manipulation--concate,upper,lower,trim,ltrim,rtrim,replace,reverse,replicate,STRING_SPLIT()
+--2.calculation--len
+--3.string extraction--left,right,substring
+-------2. Numeric functions (mathematical calculations)
+--abs(),round,celing,floor,power,sqrt,square,SIGN()	Returns number's sign
+select * from sales.customers
+select CustomerID,CONCAT(FirstName,' ',LastName) as FullName from sales.customers
+select CustomerID,upper(CONCAT(FirstName,' ',LastName)) as FullName from sales.customers
+select CustomerID,lower(Country) as Country,CONCAT(FirstName,' ',LastName) as FullName from sales.customers
+--trim-remove leading and tailing which spaces
+select CustomerID,trim(upper(CONCAT(FirstName,' ',LastName)))as FullName from sales.customers
+
+--task--find customers whose first name conatins leading and trailing spaces
+select FirstName from sales.customers
+where FirstName!=trim(FirstName)
+--or
+select FirstName from sales.customers
+where len(FirstName)!=len(trim(FirstName))
+--replace-replace specific charachter with a new chracter
+--for example i have phone no.548-768-9876 but i do not wanrt - i want '/'so i used replace
+select '123-567-7890' as phone, replace('123-567-7890','-','')as Cleaned_phone
+select '123-567-7890' as phone, replace('123-567-7890','-','/')as Cleaned_phone
+select 'python.txt' as filename, replace('python.txt','.txt','.csv')as Change_fileName
+
+---calculation
+select FirstName,len(FirstName) as Total_char_in_firstname from Sales.Customers
+select 'python.txt' as fileName, len('python.txt') as len_of_filename
+
+--string extraction
+select 'python.txt' as fileName, left('python.txt',4) as first_4_char_of_filename
+select 'python.txt' as fileName, right('python.txt',4) as last_4_char_of_filename
+select FirstName,left(FirstName,2) as first_3_char_of_firstName from Sales.Customers
+select FirstName,left(trim(FirstName),2) as first_3_char_of_firstName from Sales.Customers
+--substring(value,start position, length)length-means how many char you want
+select 'python.txt' as fileName, substring('python.txt',7) as substring_of_filename
+select 'python.txt' as fileName, substring('python.txt',7,2) as substring_of_filename
+select 'python.txt' as fileName, substring('python.txt',1,3) as substring_of_filename
+select FirstName,substring(FirstName,2,4) as substring_firstname from Sales.Customers
+select FirstName,substring(trim(FirstName),2,len(FirstName)) as substring_firstname from Sales.Customers
+
+--number functions
+-------2. Numeric functions (mathematical calculations)
+--abs(),round,celing,floor,power,sqrt,square,SIGN()	Returns number's sign
+select 3.516 as num,round(3.516,2) as RoundNum_2
+select 3.516 as num,round(3.516,1) as RoundNum_1
+select 3.516 as num,round(3.516,0) as RoundNum_0
+select 3.516 as num,abs(3.516) as Abs_num
+select -10 as num,abs(-10) as Abs_num--remove any sign for example -10 than it abs is 10
+select 3.516 as num,ceiling(3.516) as ceiling_num
+select 3.516 as num,floor(3.516) as floor_num
+select 2 as num, power(2,5) as power_num
+select 8 as num, sqrt(8) as sqrt_num
+select 3 as num, ceiling(sqrt(3)) as sqrt_num
+select 2 as num, square(2) as square_num
+select +8 as num, sign(+8) as sign_of_num
+select -8 as num, sign(-8) as sign_of_num
+select 8 as num, sign(8) as sign_of_num
+
+--date and time functions
+--date--2015-10-8--year-month(1,12)-date(1,31)
+--time--18:55:45--hours(0,23)-minutes(0,59)-seconds(0,59)
+--both are togther it called time stamp of datetime - date and time -(2015-10-8 18:55:45)
+ 
+/*
+
+GETDATE===(Current date and time	GETDATE()
+SYSDATETIME===(Current date/time with greater precision	SYSDATETIME()
+GETUTCDATE()	Current UTC date/time	GETUTCDATE()
+YEAR()	Extracts year	YEAR('2026-10-23') → 2026
+MONTH()	Extracts month	MONTH('2026-10-23') → 10
+DAY()	Extracts day	DAY('2026-10-23') → 23
+DATEPART()	Extracts a date component	DATEPART(YEAR, '2026-10-23')
+DATENAME()	Returns a date part as text	DATENAME(MONTH, '2026-10-23') → October
+DATEADD()	Adds/subtracts time	DATEADD(DAY, 5, '2026-10-23')
+DATEDIFF()	Counts date-part boundaries	DATEDIFF(DAY, '2026-10-01', '2026-10-23') → 22
+EOMONTH()	Last day of month	EOMONTH('2026-10-23') → 2026-10-31
+DATEFROMPARTS()	Creates a date	DATEFROMPARTS(2026, 10, 23)
+ISDATE()	Checks whether an expression is a valid date/time	ISDATE('2026-10-23')
+DATETRUNC()	Truncates to a date part	DATETRUNC(MONTH, GETDATE())*/
+
+
+
+--part extraction--day,month,year,datepart,datename,datetrunc,eomonth
+--formate and casting-formate, convert, cast
+--calculations-dateadd, datediff
+--validation -isdate
+
+select OrderID,OrderDate,ShipDate,CreationTime from Sales.Orders
+select OrderID,OrderDate,ShipDate,CreationTime,GETDATE() as todays_date,SYSDATETIME() as more_precision_date
+from Sales.Orders
+
+
+select OrderID,OrderDate,ShipDate,CreationTime,
+year(OrderDate) as year_from_order_date,
+month(OrderDate) as month_from_order_date,
+day(OrderDate) as day_from_order_date,
+datepart(year,OrderDate) as datepart_year,
+datepart(MM,OrderDate) as datepart_month,--month has abbrivation MM
+datepart(day,OrderDate) as datepart_day,
+datepart(weekday,OrderDate) as datepart_weekday,
+datepart(week,OrderDate) as datepart_week,
+datepart(quarter,OrderDate) as datepart_quarter,
+datepart(hour,CreationTime) as datepart_hours
+from Sales.Orders
+
+select OrderID,OrderDate,ShipDate,CreationTime,
+datename(year,OrderDate) as datename_year,--this already numereic so no name
+datename(month,OrderDate) as datename_month,--it has name janu,feb..so on
+datename(day,OrderDate) as datename_day,--this already numereic so no name
+datename(weekday,OrderDate) as datename_weekday
+from Sales.Orders
+
+select OrderID,OrderDate,
+dateadd(month,1,OrderDate)as month_added,--here we add 1 month inb actiual month
+dateadd(year,4,OrderDate)as year_added,
+dateadd(day,2,OrderDate)as day_added,
+datename(month,OrderDate) as datename_month,
+ShipDate,CreationTime--it has name janu,feb..so on
+from Sales.Orders
+
+select OrderID,OrderDate,ShipDate,CreationTime,isdate(OrderDate) as is_date
+from Sales.Orders--here i get error because order_date  datatype is not datetime
+
+select OrderID,OrderDate,ShipDate,CreationTime,isdate('2025-6-08') as is_date --'2025-6-08'this is hard coded date
+from Sales.Orders
+
+select OrderID,OrderDate,getdate() as today,datediff(day,OrderDate,getdate()) as differenc_bet_days,
+datediff(month,OrderDate,getdate()) as differenc_bet_month,
+datediff(year,OrderDate,getdate()) as differenc_bet_years
+from
+Sales.Orders
+
+select OrderID,CreationTime,DATETRUNC(day,CreationTime) as only_day,--so here year is remaining and 
+--other stuff would reset it became it intial value for example time start from 0 so it reset to 0
+--month start from 1 so it reset to 1
+--datepart reset 1
+--time part rest to 0
+--but if we do for date than it keep year-month-date as it is and time is reset only
+DATETRUNC(month,CreationTime) as only_month,
+--    if we do for month than it keep year-month as it is and date and time are reset 
+DATETRUNC(year,CreationTime) as only_year,
+--   if we do for year than it keep year as it is and month ,date ,and time arw reset
+DATETRUNC(hour,CreationTime) as only_hours,
+DATETRUNC(minute,CreationTime) as only_minutes,
+DATETRUNC(second,CreationTime) as only_second
+from
+Sales.Orders
+
+
+--when we actually used datetrunc
+select
+DATETRUNC(month,CreationTime),count(*)
+from Sales.Orders
+group by DATETRUNC(month,CreationTime)
+
+--eomonth --it chnage the date of that perticular month for example i write 2025-02-10 , so month is februay and 
+--it last day of month is 28 so it chnage 2025-02-28
+--2025-01-13---op--2025-01-31
+select '2025-02-10' as actual_date,
+EOMONTH('2025-02-10') as end_of_month
+
+select '2025-01-13' as actual_date,
+EOMONTH('2025-01-13') as end_of_month
+
+--Task--how many order were placed each year
+select count(OrderId) as num_of_orders,
+datetrunc(year,OrderDate) as based_orderDate
+from Sales.Orders
+group by datetrunc(year,OrderDate)
+
+select count(OrderId) as num_of_orders,
+datetrunc(month,OrderDate) as based_orderDate
+from Sales.Orders
+group by datetrunc(month,OrderDate)
+
+--task-show all orders that were placed during the month of february
+select * from Sales.Orders
+where datename(month,OrderDate)='february'
+--or
+select * from Sales.Orders
+where month(OrderDate)=2
+
+----datatypes--
+--day,month,year,datepart--int
+--datename-string
+--eomonth--date
+--datetrunc-datetime
+
+--->which part i need to extract fromt the date based on i used my functions
+    --->if i need day or month --i asked in which form numeric or full name
+                               --->numeric-->day(), month()
+                               --->full name-->datename
+    ---> if i need year--i used year()
+    --->other parts ?--i used datepart()
+
+--year month day  hours minutes seconds
+--2025- 11 - 30   59   : 55     :45
+--yyyy- MM - dd   HH   : mm     :ss
+--format specifier -yyyy
+--MM-month
+--mm-minutes
+
+--international standard(ISO 8601)-yyyy-MM-dd--SQL foolow
+--USA Standard--MM-dd-yyyy
+--Europan Standard--dd-MM-yyyy
+
+
+--->Formate and casting::::
+--formate - convert date in any formate --Formats a value as text
+       --we formate number also 1234.89 formate N--1,234.89,,formate c---$1,234,89,formate P---1,234.89%
+--convert function- convert  in 20 aug 25 or 20250820Converts data with optional formatting style
+--CAST()	Converts a value to another data type
+         --string to number
+         --date to string
+         --string to 
+
+--formate(value, format[,culture])culture is optional
+select '2025-10-09' as date,
+format(cast('2025-10-09' as date),'dd/MM/yyyy')
+--format(2025-10-09,'MM/dd/yyyy'.'ja-JP'),
+--format(2025-10-09,'MM/dd/yyyy'.'fr-FR')
+
+select OrderID,CreationTime,
+FORMAT(CreationTime,'dd') dd,
+format(CreationTime,'ddd') ddd,
+format(CreationTime,'dddd') dddd,
+format(CreationTime,'d') d,
+FORMAT(CreationTime,'MM') MM,
+format(CreationTime,'MMM') MMM,
+format(CreationTime,'MMMM') MMMM,
+format(CreationTime,'M') M,
+format(CreationTime,'MM-dd-yyyy') USAFormat,
+format(CreationTime,'dd-MM-yyyy') StandardFormate
+from Sales.Orders
+
+--Task:show creationtime using the following formate:
+--day wed jan q1 2025 12:34:56pm
+select OrderID,CreationTime,
+concat('Day',' ',format(CreationTime,'ddd'),' ',format(CreationTime,'MMM'),' Q',datename(quarter,CreationTime),
+' ',year(CreationTime),' ',format(CreationTime,'hh:mm:ss tt')) as newformate
+from Sales.Orders
+
+--aggragate function with formate
+
+select 
+format(OrderDate,'MMM yy'),
+count(*)
+from Sales.Orders
+group by format(OrderDate,'MMM yy')
+
+--convert(datatype, value[,style])style is optional parameter
+select convert(int,'123') as [string to int convert]
+select CreationTime,convert(varchar,CreationTime,32) as[usa std. to style:32]
+from Sales.Orders
+select CreationTime,convert(varchar,CreationTime,34) as[Euro std. to style:34]
+from Sales.Orders
+select convert(date,'12-3-2027') as[string to date]
+select CreationTime,convert(date,CreationTime) as[datetime to date]
+from Sales.Orders
+select format(convert(date,'2025-10-09'),'dd/MM/yyyy')
+
+--Cast--convert values in specific data types
+--cast(value as data_type)
+--convert and cast both are use for casting
+select cast('123' as int)
+select cast(2025-10-09 as varchar)
+select cast('2025-10-09' as datetime)
+select cast('2025-10-09' as date)
+select CreationTime,cast(CreationTime as date) as[datetime to date]
+from Sales.Orders
+
+--format--anytype to only string, using formate datetime and numbers
+--convert--anytype to anytype,formate only date and time
+--cast--anytype to anytype
+
+--Date Calculation-dateadd(part,add,date)--we can add and substract month,date, year,datediff(part,start_date,enddate)
+select month('2025-06-20')as actualMonth,format(cast(dateadd(month,2,'2025-06-20') as date),'MM') as newDate
+
+select CreationTime,
+month(CreationTime) as actualMonth, 
+format(dateadd(month,-3,CreationTime),'MM') as ThreemonthAdded,
+format(dateadd(year,3,CreationTime),'yyyy') as ThreeyearAdded,
+format(dateadd(day,3,CreationTime),'dd') as ThreedaysAdded,
+datediff(month,CreationTime,GETDATE()) as diff_month,
+datediff(day,CreationTime,GETDATE()) as diff_day,
+datediff(year,CreationTime,GETDATE()) as diff_year,
+datediff(day,OrderDate,ShipDate) as totaldays
+from Sales.Orders
+
+select '2034-10-09', isdate('2034-10-09'),isdate('hello')
+
+--task--find the number of days between each order and the previous order
+
+select OrderId,OrderDate as CurrentDate,
+Lag(OrderDate) over(order by OrderDate) as previousDate,
+datediff(day,Lag(OrderDate) over(order by OrderDate),OrderDate) as [num of days beteen orders]
+from Sales.Orders
+
+select OrderDate, isdate(OrderDate),
+case when isdate(OrderDate)=1 then cast(OrderDate as date)
+     else '1-1-1'--instead of null we put 1-1-1 date type
+end newOrderDate
+from(
+select '123' as OrderDate Union
+select '2034-10-09' Union
+select '10-09-2034' Union
+select '10' Union
+select '2042') t
+
+---Null functions
+/*
+ISNULL()-->     Replace NULL with a specified value	ISNULL(score, 0)
+COALESCE()-->	Return first non-NULL value	COALESCE(phone, email, 'Unknown')
+NULLIF()-->	    Return NULL if two values are equal	NULLIF(score, 0)
+IS NULL-->	    Find rows containing NULL	WHERE score IS NULL--TRUE or FALSE
+IS NOT NULL-->	Find rows without NULL	WHERE score IS NOT NULL--TRUE or FALSE*/
+
+--isnull(value, replacementvalue)-is null replace value with speciific value
+select ShipAddress,BillAddress, 
+isnull(ShipAddress,'n/a') as updatedShipAddress,
+isnull(BillAddress,ShipAddress)
+from Sales.Orders
+
+---coalesce()-return the first non -null value from a list
+--coalese(value1,value2,value3)
+select ShipAddress,BillAddress,  
+coalesce(ShipAddress,'unknown'),--instead of null we put unknown
+coalesce(BillAddress,ShipAddress),--instead of null we put ship address in bill addrsss
+coalesce(BillAddress,ShipAddress,'unknown')--instead of null we put ship address in bill addrsss, 
+--plus where ship address and bill adress both null there we put unknown
+from Sales.Orders
+
+select coalesce(null,'jemmy','vin','har')
+select coalesce(null,null,null,-5,6,7,4,null,1)
+
+--isnull and coalesce we used before performing data aggreggation,
+--here we first handle the null before doing any sql task'
+
+--TAsk find the average score of the customers
+ select CustomerID,Score,
+ avg(Score) over() avarage, 
+ coalesce(Score,'0') as [replace null with 0],
+ avg(coalesce(Score,'0')) over() avgscore
+from Sales.Customers
+
+
+select 1+5
+select 0+5
+select ''+'b'
+select null+5
+select null+'b'
+
+--task--display the full name of customers in a single field -by merging their first name and last names,
+--and 10 bouns points to each customers score
+select trim(FirstName),trim(LastName),coalesce(trim(FirstName),' ')+' '+coalesce(trim(LastName),' ') as Full_name,Score, 
+coalesce(Score,0)+10 as [score has 10 bonus point]
+from Sales.Customers
+
+select *from Sales.Customers
+select *from Sales.Employees
+----.\>;when we perform join always check null in keys if it has null give some value 
+--for example--
+--select a.year,a.type,a.orders.b.sales from table1 a join table2 b
+--on a.year=b.year--this column has no null value so directly compare but type has null so for that
+--and isnull(a.type,' ')=isnull(b.type,'') 
+
+-->:handle null before sorting data
+--we have data 25,null,15
+
+--task-sort the customers from lowest to highest scores with null apperaing last
+select *from Sales.Customers
+order by Score asc--so here null come first but we want null in last
+
+select CustomerID,Score,
+case when Score is null then 1 else 0 end flag
+from Sales.Customers
+order by flag,Score
+
+--nullif--compares two expresions returns: null, if they are equal 
+--first value if they are not equal
+--nullif(value1, value2)
+--nullif(originalprice,dicountedprice)
+--task--find the sales price for each order by diviving sales quanity
+select OrderID,Sales,Quantity,
+(Sales/(case when nullif(Quantity,0) is null then 1 else Quantity end )) as SalesPrice
+from Sales.Orders
+
+--is null-return true if the value is null 
+--is not null- return true if the value is not null
+--value us null, value is not null
+select BillAddress,ShipAddress
+from Sales.Orders
+where BillAddress is not null
+
+
+--is null use case in Anti join(left anti join and right antgi join)
+--finding unmatched rows between two tab;les
+select *from customers
+select *from orders
+select c.id , c.first_name,o.order_id,o.sales from customers as c left join orders as o
+on c.id=o.customer_id where o.customer_id is null
+
+select c.id , c.first_name,o.order_id,o.sales from customers as c right join orders as o
+on c.id=o.customer_id where c.id is null
+
+--task--list all details for customers who have not places any orders
+select c.CustomerID,c.FirstName,c.LastName,c.Country,c.Score
+from Sales.Customers as c left join Sales.Orders as o
+on c.CustomerID=o.CustomerID 
+where OrderId is null
+select *from Sales.Customers
+
+---empty string, zero char , and null
+with Orders as(
+select 1 ID,'1' as category union
+select 2,'' union
+select 3, null union
+select 4,'  ')
+select ID,category,DataLength(category)from Orders
+
+                -->null             empty string            Blank Space
+--representation-->Null             ''                      ' '
+--meaning       -->unknown          known empty value       known, space value
+--datatype      -->special marker   string(0)-size is0      string(1 or more)
+--storage       --> very minimal    occupies memory         occupies memeory (each space)
+--performance   -->best             fast                    slow
+--comparison    -->is null          =                       =
+
+--data policy--1.only use nulls abd emnpty strings but avoid blank spaces
+with Orders as(
+select 1 ID,'1' as category union
+select 2,'' union
+select 3, null union
+select 4,'  '
+)
+select *,Datalength(trim(category)) from Orders
+--Datapolicy 2. only use null avoid empty string and blank spaces
+with Orders as(
+select 1 ID,'1' as category union
+select 2,'' union
+select 3, null union
+select 4,'  '
+)--in nuyllif we compares value if it same than it return NUll not than first value
+select *,datalength(category) as categorylen,
+trim(category) as trimvalue,datalength(trim(category)) as [after trimming datalength],
+nullif((trim(category)),'') from Orders
+--Datapolicy 3. use the default value 'unknown' and avoid using null, empty string and blank spaces
+
+with Orders as(
+select 1 ID,'1' as category union
+select 2,'' union
+select 3, null union
+select 4,'  '
+)--in nullif we compares value if it same than it return NUll not than first value
+select *,datalength(category) as categorylen,
+trim(category) as trimvalue,datalength(trim(category)) as [after trimming datalength],
+coalesce(nullif((trim(category)),''),'unknown')
+from Orders
+--> data policy use case
+--replacing empty strings , blanks, null with default value during data preparation 
+--before using it in reporting to improve readiblity and reduce confusion
+
+--Nulll summary:::
+--nulls special marker means missing values
+--using nulls can optimize storage and perfromance
+
+--functions--1.coalesce|isnull--replace null to some value
+           --2.nullif-- check two values if it same return null, not than return first value
+           --3.is null|is not null --check value is null or not and based on that return true and false 
+                    --|check in where condition
+--use case--handle nulls before data aggregation duch as avg, sum,
+          --handle nulls before -mathematical operation such as null+5 return null 
+          --handles nulls before join tables
+          --handles nulls before sorting data
+          --finding unmatched data -left anti join here we use is null 
+          --data policy 
+
+
+---Case statement:evalutes a list of conditions and returns a value when the first condition is met
+/*syntax CASE 
+              WHEN CONDITION1 Then result1
+              WHEN CONDITION2 Then result2
+              WHEN CONDITION2 Then result2
+            else result--this is optional
+          END*/
+
+select *,
+Case when Sales> 60 then 'high'
+     when Sales> 30 then 'medium'
+     else 'low'
+end as [sales_case]
+from Sales.orders
+--main purpose of case stmt is data transformation-derive new infromation
+--create new columns using existing data
+
+--1...categorizing data-group the data into different categories based on certain condtions
+
+--task--generate report showing the total sales for each category
+--high if sales higher than 50
+--medium if sales between 20 to 50
+--low-if the sales equal or lower than 20
+--sort result from lowest to highest
+select sales_case,
+sum(Sales) as totalsales
+from(
+select OrderID,sales,
+Case when Sales> 50 then 'high' 
+     when Sales> 20 then 'medium'
+     else 'low'
+end as sales_case
+from Sales.orders)t
+group by sales_case
+order by totalsales desc
+
+--2..mapping-transform the values from one from to another
+--task retreive employees details with gender displayed as full text
+select *,
+case when Gender='M' then 'Male'
+     else 'Female'
+    end as [full form of gender]
+from Sales.Employees
+--task-retrive customers details with abbrivated country code
+select *, 
+case 
+when Country='germany' then 'DE'
+when Country='USA' then 'US'
+else 'Not Available'
+end as country_abbrivation,
+--other way case stmt
+case Country
+when 'germany' then 'DE'
+when 'USA' then 'US'
+else 'Not Available'
+end as country_abbrivation1
+from Sales.Customers
+
+select distinct Country from Sales.Customers
+
+--handle null in case stmt
+--task find the average scors of customers and treat nulls as 0 
+--additionally provide details such customerid and last name
+
+select CustomerID,LastName,Score,
+avg(isnull(Score,0)) over(),avg(Score) over()
+from Sales.Customers
+
+--task-count how many times each customers has made an order with sales greathe rthan 30
+select CustomerID ,
+sum(case when Sales>30 then 1
+        else 0
+       end ) totalorder
+from Sales.Orders
+group by CustomerID
+
+
+--case stmt summary:
+/* Evaluates a list of conditions and return a value when the first condition is met 
+rules::the data type of the result must be matching
+use cases:: derive new information--categorizng data,mapping values,handles null,doing conditional aggration */
+
+
+---Aggregation nd analytical function:::
+--count(*)-count row
+--sum()-sum of all row
+--avg(),max(),min()
+--find the total number of orders
+select *,count(*) over() from Sales.Orders
+
+use MyDatabase
+select *,count(*) over() from orders
+
+/*in group by we returns single row for each group -squeese data -
+      simple aggration,--sum,avg,min,max,count
+      it use for simple data analysis
+
+
+while in window function same row like actual table row without squeezing it-
+    simple aggragtion (sum,avg,min,max,count,ranking functions,value functions)+ more information 
+    -advanced data analysis
+
+---Window functions--perform calculations (e.g aggregation) on a specific subset of data,
+--without losing the level of details of rows using over ()*/
+
+select *,sum(Sales) over() from Sales.Orders
+
+--find the total sales for each product
+--additionally provide details such as order id order date
+select ProductID,OrderID,OrderDate,
+       sum(Sales)
+from Sales.Orders
+group by ProductID,OrderID,OrderDate--group by rule - all above column included in group by 
+
+--here we have group by limitation -we can not aggragate our data here 
+--we see sum of sales based on product Id is wrong
+--so solve this function we use over and in that we pass particition by productId like group by productId
+select ProductID,OrderID,OrderDate,sum(Sales) over(partition by ProductID) from Sales.Orders
+
+--window function the syntax
+/*window funcion f(x):: aggregate function Over clause(partition clause , order clause,frame clause)
+we have 3 types of window functions
+1.aggregate functions--count, sum,avg, min,max--all data tpe -numeric
+2.rank functions--row_number,rank,dense_rank,cume_dist,percent_rank,-all are empty ,ntile(n)--this one is numeric 
+3.value functions--lead(expre,offset,default),lag(expre,offset,default),first_value(expr),last_value(expr)-all data type*/
+
+select ProductID,OrderID,OrderDate,
+sum(Sales) over(partition by ProductID
+order by OrderID)/*partition by -divides the rows into groups,based on the columns*/
+from Sales.Orders
+
+--task--find the total sales across all orders additionally provide details such as orderid and orderdate
+
+select ProductID,OrderID,OrderDate,Sales,
+sum(Sales) over() as[total sale]
+from Sales.Orders
+
+--task--find the total sales for each product additionally provide details such as orderid and orderdate
+select ProductID,OrderID,OrderDate,
+sum(Sales) over(partition by ProductID)/*partition by -divides the rows into groups,based on the columns*/
+from Sales.Orders
+
+--task-find the total sales for each combination of product and order status
+select ProductID,OrderID,OrderDate,OrderStatus,Sales,
+sum(Sales) over(partition by ProductID, OrderStatus)
+from Sales.Orders
+
+-->window functions- over order by clause for rank() function order by clause is must
+
+--task--Rank each order based on their sales from highest to lowest, 
+--additionally provide details such order id and order date
+
+Select OrderID,OrderDate,Sales,
+rank() over(order by Sales desc) as Ranked
+from Sales.Orders
+
+---window functions -frame clause-defines a subset of rows within each window that is relevant for the calculation
+
+/*so by using partition we divide in multiple window and afte that we work on it count, sum ,etc
+but for each window we need only some data that we do it by frame 
+
+avg(sales) over(partition by category order by orderdate 
+                Rows between current row    and    unbounded following)
+1.frame types--1.Rows        Frame Boundary        Frame Boundary
+               2.Range       (lower Value)         (higher Value)
+                             1.current row         1.current row
+                             2.n preceding         2.n following
+                             3.unbounded preceding 3.unbounded following
+
+Rules::1.we can not use frame clause without order by , so order by must be exist
+       2.lower value must be dfines before the higher value
+**/
+
+select ProductID,OrderID,OrderDate,OrderStatus,Sales,
+sum(Sales) over(partition by OrderStatus order by OrderDate
+rows between current row and unbounded following)
+from Sales.Orders
+--if we are not use any frame it has default frame-rows between unbounded preceding and current row
+--check the below query result it has default frame
+select ProductID,OrderID,OrderDate,OrderStatus,Sales,
+sum(Sales) over(partition by OrderStatus order by OrderDate)
+from Sales.Orders
+
+/*window function limitation--
+
+1..window function we used with select clause and order by clause only
+2..nesting window function is not allowed,windoe function inside another window function is not allowed
+3..sql excute window functions after where clause
+4..window functions can be used together with Group By ,in the same query , only if the same columns are used
+
+window function can not use for filter the data menas not use in group by*/
+
+select ProductID,OrderID,OrderDate,OrderStatus,Sales,
+sum(Sales) over(partition by OrderStatus order by OrderDate)
+from Sales.Orders
+where ProductID in (101,102)--first where clause excute after that window function rule no 3..
+
+--task--Rank Customers based on their total sales
+select * from Sales.Orders
+select CustomerID,
+sum(Sales),
+rank() over(order by sum(Sales)) as rankSales
+from Sales.Orders--use group by+window in same query , only if same column used
+group by CustomerID
+
+/* Summary of Sql Window Functions:
+
+performs calculations on subset of data without losind details
+window V/s Group by
+1. window is more powerful and dynamic than group by
+2.data analysis- advanced -window
+               -simple data anlaysis -group by
+3.use group by+window in same query , only if same column used
+
+components-window functions+window definition over clause (partition by order by frame)
+rules :1.nesting not allowed
+       2.it used with select and order by
+       3.where clause run first after window function runs
+*/
+
+/* window aggragate function: as a result we get one aggregated value 
+for example sum of sales column, avg of sales column
+Rules::1.. in aggregate function we need to pass expression and only numeric value
+            avg(sales),sum(sales),
+       2..count accept all type of data as expression ,
+            other aggregate function accept only numeric datatype expression
+
+
+count()-returns the numbers of rows within a window
+s*/
+select *, count(*) over(partition by ProductID)
+from Sales.Orders
+select *, count(Sales) over(partition by ProductID)
+from Sales.Orders
+select *, count(1) over(partition by ProductID)
+from Sales.Orders
+
+--task -find the total number of orders
+--additionally provide details such as order id and order date
+--find the total number of customer for each order
+select OrderID,OrderDate,CustomerID,
+count(*) over(partition by CustomerID) numOfOrder
+from Sales.Orders
+
+--task --find the total number of customers and additionally provide all customers details
+select *,count(*) over() totalCustomer
+from Sales.Customers
+--find the total number of scores for the customers
+select *,count(*) over(),count(Score) over() totalCustomer
+from Sales.Customers
+--data quality issue ::-duplicates leads to inaccuracies in analysis,
+--count() can be used to identitify duplicates
+--check weather the table 'orders' contains any duplicates rows
+select OrderID,count(*) over (partition by OrderID)
+from Sales.Orders--for each primary key(OrderID ) is 1 if it 2 than it contain dupllicate
+
+select OrderId, Count(*) over(partition by OrderID) checkPk 
+from Sales.OrdersArchive --here we get 3 and 3 also in check pk so we have duplicates 
+
+select *
+from(select OrderId, Count(*) over(partition by OrderID) checkpk
+from Sales.OrdersArchive)t
+where checkPk>1
+
+--count uses cases-overall Analysis, Category Analysis , quality Checks:identify nulls
+--quality Checks:identify duplicates
+
+--Now Sum()--returns the sum of values within a window
+
+---find the total sales for each product
+use MyDatabase
+select order_id ,sum(sales) over() from orders
+
+select OrderID, OrderDate,ProductID,sum(Sales) over(partition by ProductID) from Sales.Orders
+
+--comparision use cases
+--compare the current value and aggregated value of window functions
+--part to whole analysis-compare current sales to total sales
+--compare total sum with max value
+--compare total sum with min value
+--compare total sum with avg value
+--compare total sum with current sale
+
+select OrderID, OrderDate,ProductID,sales,sum(Sales) over(order by ProductID) totalSale,
+round(cast(Sales as float)/sum(Sales) over() *100,2) percentageOfTotalSale
+--sum(Sales) over(partition by ProductID order by ProductID rows between current row and unbounded following)
+from Sales.Orders
+
+--windoe avg aggegate function
+
+select OrderID, OrderDate,ProductID,sales,
+avg(Sales) over() avgSale,
+avg(isnull(Sales,0)) over(partition by ProductID) avgSaleProduct
+from Sales.Orders
+
+--task--find the average scores of customers and 
+--additionally provide details such CustomerID and LAstname
+
+select CustomerID,LastName,avg(Score) over() as[Averge score without handling null],
+avg(coalesce(Score,0))over() as[Averge score with handling null]
+from Sales.Customers
+
+--task-find all order where sales are higher than the averge sales across all orders
+select OrderID, OrderDate,ProductID,sales,
+avg(coalesce(Sales,0)) over() avgSale
+from Sales.Orders
+
+select * from
+(select OrderID, OrderDate,ProductID,sales,
+avg(coalesce(Sales,0)) over() avgSale
+from Sales.Orders)t
+where sales>avgSale
+
+--aggregate function Min()-return the lowest value within a window
+--and max()-return the highest value within a window
+select OrderID, OrderDate,ProductID,sales,
+max(coalesce(Sales,0)) over() maxSale,
+max(coalesce(Sales,0)) over(partition by ProductID) maxSaleBasedOnProduct
+from Sales.Orders
+
+select OrderID, OrderDate,ProductID,sales,
+min(coalesce(Sales,0)) over() minSale,
+min(coalesce(Sales,0)) over(partition by ProductID) minSaleBasedOnProduct
+from Sales.Orders
+
+--task-show the employees with the hoghest salery
+select * from
+(select *,max(salary)over() as MaxSal  from Sales.Employees)t
+where Salary=MaxSal
+
+/*running and rolling total-they aggredate sequence or members and 
+                            the aggregation is updated each time a new member is added
+    Running total-aggregate all values form the beginning up to the current point without dropping off older data
+    Rolling total-aggregate all values within a fixed time window (e.g. 30 days),as new data is added,the oldet
+                   data point will be dropped
+
+--tracking current sales with target sales
+---providing insights into hisotrical patterns
+
+if we want last 3 month so we give in frame for example
+order by month rows between 2 preceding and current row
+if current row is october
+2 preeceding is august
+so august september october
+when new current month change novbember than 2 prece is september
+*/
+select OrderID,OrderDate,Sales,sum(Sales) over(order by day(OrderID))from Sales.Orders
+select OrderID,OrderDate,Sales,sum(Sales) over(order by day(OrderID) rows between 2 preceding and current row
+)from Sales.Orders
+
+--task--calculate the moving(Running) average of sales for each product over time
+select OrderID,ProductID,OrderDate,Sales,avg(Sales) over(partition by ProductID),
+avg(cast(Sales as float)) over(partition by ProductID order by OrderDate) avgSales
+from Sales.Orders
+
+--task--calculate the moving(Running) average of sales for each product over time,
+--including only to next order( n following)
+select OrderID,ProductID,OrderDate,Sales,avg(Sales) over(partition by ProductID),
+avg(cast(Sales as float)) over(partition by ProductID order by OrderDate) avgSale,--here row added in and
+--in last all row divide by total row partition by product ID 1st 10,2nd-(10+20)/2,3rd-(10+20+90)/3
+--4th -(10+20+90+20)/4,5throw-(10+20+90+20+10)/5,next for product Id 102 --15/1,15+30/2
+avg(Sales) over(partition by ProductID order by OrderDate 
+rows between current row and 1 following) avgSalesonlywithnextorder--here it take only next roe and current row 
+--so at time only 2 rows current row+next row divide by 2
+from Sales.Orders
+
+/*summary window aggregate function::
+1.overall total over()-overall analysis
+2.total per groups over(partition by)-compare categories
+3.running total over(order by)-progress over time
+4.rolling total over(order by rows between and)-specific fixed window*/
+
+
+/*window Ranking function
+Function	    Purpose                                     Handles duplicates
+ROW_NUMBER()	Gives every row a unique sequential number	Different numbers
+RANK()	        Gives equal values the same rank	        Skips ranks after ties
+DENSE_RANK()	Gives equal values the same rank	        Does not skip ranks
+NTILE()	        Divides ordered rows into a specified       Assigns bucket numbers
+                number of groups	
+
+rank -the products based on their sales
+note-sql sorts data as first step
+
+Integer based ranking-assign an integer for each row[top/bottom N analysis]
+                      find top 3 products
+                      in that row_number,rank,dense_rank,ntile
+pecentage based ranking-assign apercentage to each row[distribution analysis]
+                     it range between0 to 1 
+                    -find top 20% product -this time percentage based ranking is good
+                    -cume_dist()-calculates the cumulative distribution of a value within a set of values
+                    ,percent_rank()-returns the percentile ranking number of a row
+
+syntax:: Rank() over(partition by(optional) order by (must or required))
+ntile(n)-has only expression others no need expression
+*/
+
+select OrderID,ProductID,Sales, 
+Row_number()    over(order by Sales desc) row_number_Assign,
+rank()          over(order by Sales desc) rank_Assign,
+dense_rank()    over(order by Sales desc) dense_rank_Assign,
+ntile(5)        over(order by Sales desc) five_bucket,--larger bucket come first ,
+ntile(3)        over(order by Sales desc) three_bucket,--we created 3 bucket here 
+cume_dist()     over(order by Sales desc) cume_dis_Assign,
+percent_rank()  over(order by Sales desc) percent_rank_Assign
+from Sales.Orders
+/*row_number for top N analysis*/
+--task-find the highest sales for each product
+select * from(Select OrderID,ProductID,Sales
+,Row_number() over(Partition by ProductID Order by Sales desc) as Row_numbers
+ from Sales.Orders)t
+ where Row_numbers=1
+ /*row_number for bottom N analysis*/
+--help analysis the underperformance to manage risks and to do optimizations
+ --task-find the 2 lowest customers based on their total sales
+
+ select * from(select CustomerID,
+ sum(Sales) totalSale,
+ row_number() over(order by sum(Sales)) as rank_total_Sale
+ from Sales.Orders
+ group by CustomerID)t
+ where rank_total_Sale<=2
+
+--if any table has no primary key we add using row_number
+--task-- assign unique ID to the rows of the OrdersArchive
+select row_number() over(order by OrderID) UniqueID,
+* from Sales.OrdersArchive
+--using that unique id we do many stuff for example join data
+--paginationg - the process of breaking down a large data into smaller , more manageable chunks
+
+--usecases-identified duplicates and remove duplicates row for data quality
+
+--task--identified duplicate rows in the table OrdersArchive and return a clean result without any duplicates
+select * from(
+select row_number() over(partition by OrderID order by OrderID) UniqueID,* from Sales.OrdersArchive)t
+where UniqueID=1
+
+/*Row number use cases
+1.top N analysis
+2.bottom n Analysis
+3.assign unique ids
+4.quality checks identity duplicates*/
+
+
+--ntile(n)--bucket size=number of rows/number of buckets==i have 11 rows and i give n= 5 than 11/5=2.2 so ,
+--rank for rows is like that 1 to 5 -1,1,2,2,3,3,4,4,5,5 so total 10 is fiished
+--but 1 row remianing to so 1 rank given to it, so series is like that 1,1,1,2,2,3,3,4,4,5,5
+
+--task-1st useCase::segment all orders into 3 categories :high, medium and low sales
+
+select *,case when three_bucket_categories=1 then 'high'
+              when three_bucket_categories=2 then 'medium'
+              else 'low'
+              end as Salescategories
+from(select OrderID,ProductID,Sales,
+ntile(3) over(order by Sales desc) three_bucket_categories
+from Sales.Orders)t
+
+--ntile 2nd Usecase::equalizing the load
+/*we have Database A  and in that we have big table and from that table we created 4 tables using ntile
+now we moved that 4 tables in DAtabase B 
+and if we want again big table from that 4 tables we merge them using Union
+
+usecase like that- spily-load in different database
+*/
+
+--task is in order to export the data , divide the orders into 2 groups
+
+select 
+ntile(2) over(order by OrderID) as Groups
+,* from Sales.orders
+
+/*--percentage based Ranking functions 
+--1.cume_dist--(position Number/number of rows)--1st-1/5,2nd-2/5, if we have value twice than 
+    tie rule:last postition number take 
+    for exampole 3row value=10 ,same 4row value=10 than 3rd row- 4/5, 4th row also 4/5...
+    cumulative distribution calculates the distribution of data points within a window
+--2 percent_rank--(position Nr-1/Number of rows-1)-it scale always betwwn 0 to 1
+    if we have same value occurance than 
+    tie Rule:first postition number take,
+    1st-1-1/5-1=0/4=0,2nd-2-1/5-1=1/4
+    for exampole 3row value=10 ,same 4row value=10 than 3rd row- 3-1/5-1=2/4=0.5, 4th row also 3-1/5-1=0.5...*/
+
+select OrderID,ProductID,Sales, 
+cume_dist()     over(order by Sales desc) cume_dis_Assign,
+percent_rank()  over(order by Sales desc) percent_rank_Assign
+from Sales.Orders
+
+--task-find the products that fall within the higest 40% of the prices
+select *from(select
+cume_dist() over(order by Price desc)*100 as cume_dist_based_price,
+* from Sales.Products)t
+where cume_dist_based_price<=40
+
+select *from(select
+percent_rank() over(order by Price desc)*100 as cume_dist_based_price,
+* from Sales.Products)t
+where cume_dist_based_price<=40
+
+/*window value functions
+lag-previous row data ompare to current row
+lead-next row data compare to current row
+first_value-first row value of particular columns
+last_value-last row value of particular columns
+Month	    Sales
+January	    20
+February	10                        -first_value()-output-20
+March	    20--this is my current row-lag()-output-10-check everything based on current row
+April	    470                       -lead()-output-470 
+May	        40                        -last_value()-output-40
+
+value function syntax
+                            expression      partition  order        frame
+lead(expre,offset,default)  all data type   optional   required     not allowed
+lag(expre,offset,default)   all data type   optional   required     not allowed
+first_value(expr)           all data type   optional   required     optional
+last_value(expr)            all data type   optional   required     should be used
+
+offset(optional) -1 is default - number of rows forward or backward from current row
+default vaule(optional)-null is default- return default value if next/previous is not avilable
+*/
+--we need to find diffrene between two sales 
+select *,nextProductSale-Sales as differeneBetweenSales from(select OrderID,ProductId, Sales,
+lead(Sales) over(order by ProductID) nextProductSale
+from Sales.Orders)t
+--find the difference between current sales with previous sale
+select *,Sales-PrevProductSale as differeneBetweenSales from(select OrderID,ProductId, Sales,
+lag(Sales) over(order by ProductID) PrevProductSale
+from Sales.Orders)t
+
+select OrderID,ProductId, Sales,
+lag(Sales,2,0) over(order by ProductID) PrevProductSale--first 2-offset rows display null so it replace by 0 here
+--because i add 0 in query
+from Sales.Orders
+
+select OrderID,ProductId, Sales,
+lead(Sales,2) over(order by ProductID) nextProductSale
+from Sales.Orders
+
+select OrderID,ProductId, Sales,
+lead(Sales,2,0) over(order by ProductID) nextProductSale
+from Sales.Orders
+
+select OrderID,ProductId, Sales,
+First_value(Sales) over(order by ProductID) nextProductSale
+from Sales.Orders
+
+select OrderID,ProductId, Sales,
+last_value(Sales) over(order by ProductID) nextProductSale
+from Sales.Orders
+
+/*Use cases-time series analysis --the procee of analyzing the data to understand
+patterns,trends and behavious over time.
+month-over-month(MoM)-analysis short-term trends and discover patterns in seasonality
+, year-to-year(YoY)-analyze the overall growth or decline of the business performance over time*/
+
+--Task--Analyze the month over month performance 
+--by finding the percentage change in sales between the current and previous month
+
+select*,
+ currentMonthSales-previousMonthSales MoM_Chnage,
+ round(cast((currentMonthSales-previousMonthSales) as float)/previousMonthSales *100,1)
+from(select
+month(OrderDate) orderMonth,
+sum(Sales) currentMonthSales,
+lag(sum(Sales)) over(order by month(OrderDate))  previousMonthSales
+from Sales.Orders
+group by month(OrderDate))t
+
+--customer rentention analysis-
+--measure customers behaviour and loyalty to help businesses build strong relationships with customers
+select *from Sales.Orders
+--analayze customer loyaltyy by ranking customers based on the average number of days btweeen orders
+select CustomerID,avg(daysuntillnextorder) avgdays,
+row_number() over(order by coalesce(avg(daysuntillnextorder),999999)) ranked
+from(
+select OrderID,CustomerID,OrderDate,
+lead(OrderDate) over(partition by CustomerID order by OrderDate) nextOrderDate,
+datediff(day,OrderDate,lead(OrderDate) over(partition by CustomerID order by OrderDate)) daysuntillnextorder
+from Sales.Orders)t
+group by CustomerID
+
+select OrderID,OrderDate,Sales,
+first_value(Sales) over(Order by day(OrderDate) desc) 
+from Sales.Orders
+select OrderID,OrderDate,Sales,
+last_value(Sales) over(Order by month(OrderDate) desc) 
+from Sales.Orders
+
+select OrderID,OrderDate,Sales,
+last_value(Sales) over(Order by month(OrderDate) desc
+rows between current row and unbounded following) 
+from Sales.Orders
+
+--find the lowest and highest sales for each product
+select OrderID,ProductID,OrderDate,Sales,
+first_value(Sales) over(partition by ProductID Order by Sales) lowestSales
+,
+last_value(Sales) over(partition by ProductID Order by Sales
+rows between current row and unbounded following) highestSales
+from Sales.Orders
+/*window value analytical funtionc overview--
+-allow access specific value from another row
+types
+1.previous value -lag()
+2.lead-next value
+3.first_value-first value from subset
+4.last_value
+rules-expression any data type
+order by -required
+frame-option but last value we need to use
+
+Usecases--time series analysis -mom  and yoy
+time gap analysis-
+comparision analysis */
+
+
+/*9.advanced Sql techniques
+1.subsqueries
+2.CTE
+3.Views
+4.CTAS Tables and Temp Tables
+5.Stored Procedure
+6.Triggers
+
+10.performance optimization
+11.AI and Sql
+12.Sql projects*/
+
+/*DataWare House--a Special database that collects and integrates data form different sources to
+enable analytics and support decision making
+challenges--                    solution
+1.redundancy                    subsqueries
+2.performance issue             CTE=common table expression
+3.complexity                    views
+4.hard to maintain              temp tables,CTAS-create table as select
+5.DB stress
+6.security
+
+Database engine-it is the brain of the database, excuting multiple operations such as storing ,
+retrieviong and managing data within the database.
+
+disk Storage-long term memory , where data is stored permanently.
+Capacity: can hold a large amount of data
+Speed-slow to read and to write
+
+--in disk storage has 3 category 
+1.user data storage-its the main content of the database-
+  this is where the actual data that users care about it stored,
+  such as orders,customers all are our user data
+2.System Catalog--database's internal storage for its own information
+  a blueprint that keeps track of everything about the database itself not the user data.
+  it holds the metadata information about the database.
+  metadata--data about data,
+  metadata of any tables means table name,their all column names, their datatype, it length, isnullable
+  information schema-a system-defined schema with buit-in views that provide info about the database , 
+  like tables and columns.*/
+  select * from Information_schema.columns--likewise we found catalog or metadata
+  select distinct TABLE_NAME from Information_schema.columns/*
+3.temporary tables-in saystem databses-tempdb ypu find it
+
+cache memoery- fast short term memory,where data is stored temporarily
+capacity:can hold smaller amount of data
+speed: extremely fast to read and to write
+
+subquery-query inside a query
+
+why we used subquery
+for example step 1 we need to join tables
+step 2 we filtering the data
+step 3 we need to do tranformation of data
+step 4 we need to do aggregations
+
+subsquery categories
+dependancy-1.non correlated subquery
+           2.correlated subsquery
+result types-1.scalar subquery
+             2.row Subquery
+             3.Table subquery
+location|clauses--1.select clauses
+                  2.from 
+                  3.join
+                  4.where-comparision operators--=,<,>,<=,>=,!=
+                          logical operators-in,any, all,exist
+
+*/
+--result types subquery -1.scalar subquery-only get one value doing aggregation sum,min,max,avg
+--2.row subquery-get multiple rows and single columns
+--3.Table subquery-get multiple rows and multiple columns
+
+/*location|clauses--1.select clauses
+                  2.from 
+                  3.join
+                  4.where-comparision operators--=,<,>,<=,>=,!=
+                          logical operators-in,any, all,exist*/
+
+--syntax:select col1,col2,,,from(select col1, col2,..from table where condition)as allias
+--task-find the products that have a price higher than the averge price of all products
+
+Select * From(select OrderID,ProductID,Sales,
+avg(Sales) over() avgSale
+from Sales.Orders)t
+where Sales>avgSale
+
+Select * From(select *,
+avg(price) over() avgprice
+from Sales.Products)t
+where price>avgprice
+
+--task-rank the customers based on their total amount if sales
+select *, ROW_NUMBER() over(order by totalSum ) as rankCustomers
+from(select customerid,
+sum(sales) as totalSum
+from Sales.orders
+group by customerid)t
+/*subsquery inside the select clause
+--syntax::-select col1, col2,(select col1 from table where condition )as alias
+           from table  rules: only scalar subsqueries are allowed to be used*/
+
+--task : show the product Ids, product names,prices and the total numbers of orders
+select ProductID,Product,Price,
+(select count(OrderID) from sales.Orders )totalOrder
+from Sales.products
+
+--subquery in join
+--used to prepare the data (filtering or aggregation before joining it with other tables)
+
+--task-show all customer details and find the total orders of each customer
+select c.*,o.totalOrders
+from Sales.Customers c left join 
+(select CustomerID,count(OrderId) totalOrders 
+from Sales.Orders
+group by CustomerID) o
+on c.CustomerID=o.CustomerID
+
+--how to use sunquery in where clause
+--used for complex filtering logic and makes query more flexible and dynamic
+--syntax--select col1,col2 from table 1 where col=(select col from tab2 where condition)
+
+--task-find the products that have a price higher than the averge price of all products
+select *,--here we filtering data using single value
+(select avg(price) from Sales.Products) AvgPrice
+from Sales.Products
+where price> (select avg(price) from Sales.Products)
+
+--now we filtering data using group of value at that time we used logical operator subsquery
+/*syntax-select col1,col2 from table1 where col In (select col1 from table where condition)*/
+
+--task- show the details of orders made by customers in germany 
+select o.* from Sales.Orders o full join Sales.Customers c
+on o.CustomerID=c.CustomerID where Country='Germany'
+--or
+select * from Sales.Orders where CustomerID in (Select CustomerID from Sales.Customers where Country='Germany')
+select * from Sales.Orders where CustomerID in (Select CustomerID from Sales.Customers where Country!='Germany')
+select * from Sales.Orders where CustomerID not in (Select CustomerID from Sales.Customers where Country='Germany')
+
+--sunquery with any |all
+/*select col1,col2,
+from table where col any(select col1 from table where condition)*/
+
+--task - find female employees whose salaries are greater than the salaries of any male employees
+
+select * from Sales.Employees
+where gender='F' and salary > any (select  salary from Sales.Employees where gender='M')
+
+
+/*now dependency non-correlated query-so so far what we did that all is non-correlated query
+Non correlated query means a subquery that can run independendtly from the main query--
+means we can rrun our both query seperatedly also
+
+correlated subquery- a subquery that relays on values from the Main query
+
+task--show all customers details and find the total orders of each customers*/
+
+select c.*,o.totalOrders from Sales.Customers c left join  
+(select CustomerID,Count(OrderID) totalOrders from Sales.Orders
+group by CustomerID)o
+on c.CustomerID=o.CustomerID--this is we did using non-correlated query
+
+--now we can do using correlated query
+select *,
+(select count(*) from sales.Orders o where c.CustomerID=o.CustomerID) as Total_orders
+from Sales.Customers c
+
+/*
+Non-correlated Query                                        Correlated Query
+definition- subquery is independant of the main query       a subquery that relays on values from the Main query
+excution-excuted once and its result is uesd by the main    executed for each row processed by the main query
+         query
+can be excuted on its own                                   can not be excuted on its own
+easy to use:easier to read and write                        harder to read and more complex
+performance:excuted only once leads to better performance   excuted multiple times leads to bad perfomance
+usage-static comparisons, filtering with constants          row-by-row comparisions , dynamic filtering*/
+
+
+--now we write subquery with exists 
+--exists--check if subquery returns any rows
+--syntax--select col1,col2 from table 2 where exists(select 1 from table where table1.id=table2.id)
+--how exists works--for each row in query-run subquery-no result-row of main query excluded
+                                                     --return value- row of main query is included
+
+
+--task--show the details of orders made by cutsomers in germany
+select * from Sales.Orders where CustomerID in
+(Select CustomerID from Sales.Customers where country='Germany')
+
+--or
+select * from Sales.Orders o where  Exists
+(Select 1 from Sales.Customers c where country='Germany' and c.CustomerID=o.CustomerID)
+
+select * from Sales.Orders o where  Exists
+(Select 1 from Sales.Customers c where c.CustomerID=o.CustomerID)
+
+select * from Sales.Orders o where not Exists
+(Select 1 from Sales.Customers c where country='Germany' and c.CustomerID=o.CustomerID)
+
+/* subqueries recap-query isndie another query
+breaks complex query into smaller , manafable pieces
+usecases:
+1.create temporray result set
+2.prepare data before joing tables
+3.dynamic and complex filtering
+4.check the existence of roes from another tables usinf Exists
+5.row by row comparision using correlated subquery*/
+
+/*CTEs
+A CTE (Common Table Expression) is a named result you define once at the top of your
+query, then use like a table.
+-temporary , named result set(virtual table),that can be used multiple times within your query to
+simplify and organize complex query
+
+what the different betweeb subquery and CTE
+--in subsquery we excuted inside query first and it used only one place in main query 
+ for example in select, from, join, where -flow of excution bottom to top
+--but in CTE we  run CTE query first and genrate table which we used at multiple places in main query 
+for example at from, where , join same time-flow of excution top to bottom
+why we need CTE::
+ step 1- join                  subquery
+ step2 -aggragartion sum       subquery
+ step3 -again join             subquery
+ step4 -again aggragation avg  main query--we write 2 join subquerey which is crete redanduncy 
+
+ that we do only 1 using CTE
+ in CTE - first we create CTE for CTE_top_customers,another table CTE_top_products , CTE_Daily_revenue
+ 
+ last we use all that 3 in main query 
+ readability, modularity,reusability
+
+ CTE types-1.Non-recursive CTE
+                1.Standalone CTE--defined and used independently , 
+                                  runs independently as it's self-contained and does not rely on
+                                  other CTES or queries
+                2.Nested CTE
+           2.Recursive CTE
+CTE Syntax-with CTE-name as (select from table where)
+
+we can use CTE 
+select from CTE-name where
+
+we can not use Order by clause in CTE but we can used order by in main query
+*/
+
+--task--step1:find the total sales per customer
+with CTE_Total_Sale as(
+select CustomerID, sum(sales) totalSale 
+from Sales.Orders
+group by CustomerID)
+--main Query
+select c.CustomerID,c.FirstName,c.LastName,cts.totalSale
+from Sales.Customers c left Join CTE_Total_Sale cts
+on c.CustomerID=cts.CustomerID
+
+/*mutltiple standlone CTEs syntax
+with CTE_name1 as(select from where),
+CTE_name2  as(select from where),
+CTE_name3  as(select from where),
+CTE_name4  as(select from where)
+--main query
+select from CTE_name1 join CTE_name2 where*/
+
+
+--step1:find the total sales per customer
+with CTE_Total_Sale as(
+select CustomerID, sum(sales) totalSale 
+from Sales.Orders
+group by CustomerID),
+--step2:find the last order date for each customer
+CTE_last_orderDate as(select CustomerID,max(OrderDate) as lastOrderDate 
+from Sales.orders
+group by CustomerID
+)
+--main Query
+select c.CustomerID,c.FirstName,c.LastName,cts.totalSale,clo.lastOrderDate
+from Sales.Customers c left Join CTE_Total_Sale cts
+on c.CustomerID=cts.CustomerID
+left join CTE_last_orderDate clo on
+c.CustomerID=clo.CustomerID
+---nested CTE--CTE inside another CTE
+--a nested CTE uses the result of another CTE, so it can not run independently
+/* nested CTE Syntax:
+with CTE_name1 as(select from where),
+CTE_name2 as(select from CTE_name2 where)--this nested CTE
+select from CTE_name2 where--this is main query */
+
+
+--step1:find the total sales per customer
+with CTE_Total_Sale as(
+    select CustomerID, sum(sales) totalSale 
+    from Sales.Orders
+    group by CustomerID),
+--step2:find the last order date for each customer
+CTE_last_orderDate as(
+    select CustomerID,max(OrderDate) as lastOrderDate 
+    from Sales.orders
+    group by CustomerID
+),
+--step 3: Rank customers based on total sales per customers
+CTE_Rank_customers as(
+    select CustomerID, rank() over(order by totalSale desc) as rankCustomer 
+    from CTE_Total_Sale),
+
+--step 4-segment customers based on their total sales
+CTE_segment_customer as(
+    Select CustomerID,
+    case when totalSale> 100 then 'high'
+         when totalSale> 80 then 'medium'
+         else 'low'
+    end segmentCustomer
+    from CTE_Total_Sale)
+--main Query
+select c.CustomerID,c.FirstName,c.LastName,cts.totalSale,clo.lastOrderDate,crc.rankCustomer,csc.segmentCustomer
+    from Sales.Customers c left Join CTE_Total_Sale cts
+    on c.CustomerID=cts.CustomerID left join CTE_last_orderDate clo 
+    on c.CustomerID=clo.CustomerID left join CTE_Rank_customers crc 
+    on c.CustomerID=crc.CustomerID left join CTE_segment_customer csc 
+    on c.CustomerID=csc.CustomerID
+    order by crc.rankCustomer 
+
+/*--now we learn non-recursive CTE
+Non-recursive CTE-is excuted only once without any repettion .
+Recursive CTE-self-referncing query that repeatedly processes data untill a specific condition is met
+syntax::
+with CTE_name1 as(select from where --this querey called anchor query
+union all|union
+select from CTE_name1 where break condition compulsory--this querey called recursive query
+)
+select from CTE_name 1 where --this main query
+*/
+
+
+--task generate a squence of number 1 to 20 using recursive CTE
+
+with CTE_generate_Seq as(
+    select 1 as myNum
+    union all
+    select myNum+1 from CTE_generate_Seq
+    where myNum < 20)
+select * from CTE_generate_Seq
+option (maxrecursion 100)
+
+--task--show the employee hierarchy by displaying each employes s level within the3 organization level
+with CTE_emp_hierarchy as
+(select *,1 as level
+from Sales.Employees
+where ManagerID is null
+union all
+select *,2 as level 
+from Sales.Employees 
+where ManagerID=1
+union all
+select *,3 as level 
+from Sales.Employees 
+where ManagerID=2
+union all
+select *,4 as level 
+from Sales.Employees 
+where ManagerID=3
+)
+select * from CTE_emp_hierarchy--this is a compllicted way and what if new managerID is add so we need 
+--to do like wise
+
+with CTE_emp_hierarchy as
+(select *,1 as level
+from Sales.Employees
+where ManagerID is null
+union all
+select e.*,level+1
+from Sales.Employees e join CTE_emp_hierarchy ceh 
+on e.ManagerID=ceh.EmployeeID
+
+)
+select * from CTE_emp_hierarchy
+
+/* CTE overview:
+common table expresson CTE is temporary , named result set
+that chan be used mutilpe times within in query
+advantages:
+readability: breaks down complex queries into smaller pieces
+modularity:pieces are easy to manage ,develop and self contained
+resuabilty: reduce redundancu in queru
+recursive- iterations and looping in sql
+
+result of CTE is like table but cant be used form multiple queries
+
+tip:dont create more than 5 CTES in one query*/
+
+/* views--
+
+SQL Server database hierarchy
+
+sql server or Database Server(stores, manages and provide access to databases for users or applications)
+      |
+multiple Databases(collection of infromation that is stored in a structured way)
+       |
+multiple schemas(logical layer that groups related objects together)
+       |
+    tables      and    view() 
+    (a place where data is stored and organized into rows and columns)
+       |                 |
+    columns,key        columns
+       |
+   name and datatypes
+
+
+Three-Schema Architecture of DBMS, also known as the ANSI/SPARC Three-Level Database Architecture.
+
+view level(or external)
+What different users and applications can see
+Dashboards · Reports · User Views
+relavant infromation
+do not deal with anything like table ,just focus on view
+business analysts using power bi create dashboard, multiple set of views 
+     |
+logical level(or conceptual level)
+(how to organize data-application developer , data engineer-how to structuring the data)
+create table define relationships ,create views,indexes,procedure, functions -this layer is less complicated
+     |
+physical level-(or internal level)
+where actual data is stored-this layer manage my 
+Database administrator(DBA) because this database need security who can access or not
+it contains data files,partitions, logs,catalog,bloxks,caches*/
+
+
+/*what is view?--
+vitual table based on the result set of a query without storing the data in database.
+views are persisted Sql queries in the database.
+
+view                            table
+No persistance(temporary)       persisted data(Remains in the database until someone explicitly deletes or drops it)
+easy to maintain                hard to maintain
+slow response                   fast response
+read                            read/write
+
+usecase: central query Logic
+Store central , complex ,query logic in database
+for access by multiple queries ,reducing project complexity
+
+--1.abstraction-hide some columns based on users - 
+if out HR wants see employes data for example name and dept but we 
+out oroginal table contains salary to so using view we just retruve name and dept and hide salary
+
+2. reusability-if we have 3 employees and all wants same query result so that 3 write query which is same using CTEs
+so it is totally watse of time , instead of we create a view and used mutiple times which is not possible by CTE
+
+views                                       CTES
+reduce redundancy in mutltiple queries      reduce redundancy in 1 query
+improve reusabiltiy in mutiple queries      improve reusabiltiy in 1 query
+persisted logic                             temporary logic-on the fly-scope only in one query
+need to maintain create /drop               no maintennace -auto cleanup
+
+create/update/drop view
+view syntax--create view view_name as(
+                select from where)*/
+
+--task find the running total of sales for each month
+
+Create view MonthlyTotalSale as(
+select CustomerID,OrderID,Sales, OrderDate ,sum(Sales) over(partition by month(OrderDate)) TotalSalebyMonth
+from Sales.Orders)
+
+select* from MonthlyTotalSale
+
+select 
+DATETRUNC(month, orderDate) as OrderMonth,
+sum(Sales) as totalSales,
+count(orderID) totalOrders,
+sum(Quantity) quantity
+From Sales.Orders
+group by DATETRUNC(month, orderDate) 
+
+create view Sales.Monthly_summary as(select --assin scehma using .
+DATETRUNC(month, orderDate) as OrderMonth,
+sum(Sales) as totalSales,
+count(orderID) totalOrders,
+sum(Quantity) quantity
+From Sales.Orders
+group by DATETRUNC(month, orderDate))
+
+select *,sum(totalSales) over(order by OrderMonth) as runningTotal 
+from Monthly_summary
+
+
+select * from Monthly_summary
+
+--delete view
+drop view Monthly_summary
+
+--how to update the logic of view--drop the view first and run updated view it successfully run
+/*
+second way is T-sql
+if OBJECT_ID ('Monthly_summary','V') is not null 
+drop view Monthly_summary
+Go
+*/
+/*views use case-hide complexity
+views can be use to hide the complexity of databases tables and offers users more friendly 
+and easy to consume objects
+
+
+--task provide view that combines details from orders ,products, customers and employess*/
+
+Create view Sales.v_Order_Details as
+(select o.OrderID,o.OrderDate,o.Sales,o.quantity,p.product,p.category,
+coalesce(c.firstname,' ')+ ' '+ coalesce(c.lastname,'') as customerName,
+c.country CustomerCountry,coalesce(e.firstname,' ')+ ' '+ coalesce(e.lastname,'') as employeeName,
+e.department,e.salary
+from Sales.Orders o left join Sales.products p
+on o.productID=p.ProductID left join Sales.customers c
+on c.customerID=o.customerID left join Sales.employees e
+on o.salesPersonID=e.employeeID)
+
+select * from Sales.v_Order_Details
+
+/* views Use Case-use views to enforce security and protect sensitive data, 
+by hiding columns and/or rows from tables.
+
+task--provide a view for EU sales Team that cobines details from all tab;es
+and excludes data related to the USA*/
+
+Create view Sales.V_Order_details_EU as(
+select o.OrderID,o.OrderDate,o.Sales,o.quantity,p.product,p.category,
+coalesce(c.firstname,' ')+ ' '+ coalesce(c.lastname,'') as customerName,
+c.country CustomerCountry,coalesce(e.firstname,' ')+ ' '+ coalesce(e.lastname,'') as employeeName,
+e.department,e.salary
+from Sales.Orders o left join Sales.products p
+on o.productID=p.ProductID left join Sales.customers c
+on c.customerID=o.customerID left join Sales.employees e
+on o.salesPersonID=e.employeeID where c.country !='USA')
+
+select * from Sales.V_Order_details_EU 
+
+/*views use case:views can be used as data marts in data warehouse system
+because they provide a flexible and efficient way o present data
+
+for example--we have 
+systems include ERP system, CRM syste,Logs
+                            |
+              Data Warehouse(Multiple Tables)
+                            |
+              Data Marts(create different marts such as Sales mart, Finance Mart and it include view)
+                            |
+                     reporting such as sales
+Overview of views
+-virtual tabel based on result of query without storing data
+-we use views to persist complex sql query in Database
+-views are better than CTE -imporves reusability in multiple queries
+-views are btter than tables -fexible abd ease to maintain
+ --use cases
+1. store central complex business logic to be reused
+2.hide complexity by offering friendly views to users
+3.data security by hiding sessitive rows and columns
+3.flexibility and dynamic
+4.offer your objects in multiple language
+5.virtul layer (data marts)in data warehouse system*/
+
+
+/*4.CTAS Tables and Temp Tables:--
+DB Table:a table is a structured collection of data similar to a spreadsheet or grid (Excel)
+table types:
+1.permanent tables -two way we created-create/select , CTAs
+        create/insert-using create table table_name after that we insert data in tableusinf insert query
+        CTAS-create table as select -create a new tabke based on the result of an SQL query
+2.temporary tables-temp tables-Stores intermediated results in temporary storage within the
+database during the session
+
+difference between View and CTAS
+
+View                                            CTAS-create tabel as select
+the query of view has not yet been excuted      the query of CTAS has been excuted already
+views is slower than CTAS                       CTAS is Faster compare to Views
+data update is reflected fresh data             data update is not reflected Old data
+
+CTAS Syntax::
+create table table-name as(
+select from where)
+user case -optimization*/
+
+/*create table Sales.MonthlyOrders as
+(select Datename(month,OrderDate) ordermonth,
+count(orderID) totalOrder 
+from Sales.Orders
+group by Datename(month,OrderDate)
+);*/--this we used in other sql software
+
+select Datename(month,OrderDate) ordermonth,
+count(orderID) totalOrder 
+into Sales.MonthlyOrders 
+from Sales.Orders
+group by Datename(month,OrderDate)
+
+select * from Sales.MonthlyOrders 
+
+--for delete this table
+drop table Sales.MonthlyOrders 
+
+if OBJECT_ID('Sales.MonthlyOrders','u')is not null
+drop table Sales.MonthlyOrders 
+go--this called t-sql
+
+-/* 
+-usecase2-creating a snapshot--For example, suppose you want to preserve all orders as 
+          they existed on November 4, 2026, so you can compare them with future orders.
+--usecase3-pysical data Marts In DWH
+        persisting the data marts of a datawarehouse improves the speed of data retrieval 
+        compared to using views.
+Temporary tables -temp tables-Stores intermediated results in temporary storage within the
+database during the session
+the database will drop all temporary tables once the session ends.
+
+session-the time between connecting to and disconneting from the database.
+temporary table syntax:
+select 
+into #new-table
+from 
+where*/
+select *
+into #Orders_copy
+from Sales.Orders
+
+select * from #Orders_copy
+
+delete from #Orders_copy
+where OrderStatus='Delivered'
+from Sales.Orders
+
+select * from #Orders_copy
+
+select * 
+into Sales.OrdersTest 
+from #Orders_copy
+
+
+/*
+                    subquery            CTE             tmp             CTAS                View
+Storage           |----------memory----------|      |-----------disk----------|      |---no storage--|
+Life Time         |------------------temporary---------------|       |-----------permanant-----------|
+when deleted      |------end of query--------|      |end of session| |--------ddl-drop---------------|
+Scope             |----single query----------|      |-----multiple queries---------------------------|
+reusability       |-limited---| |--limited---|      |-medium-------| |---high------------------------|
+                  1place-1query  multiplaces-1query  mutltiquery during       multi queries
+                                                        session
+up to date        |------yes-----------------|      |---------no--------------|      |-----yes-------|
+best                      3.            2.only 5 CTE     5.                  4.                1.
+*/
+/* stored Procedure:
+collection of sql stmt that stored in database and excute whenever you need them.
+Think of a stored procedure as a reusable SQL program.
+
+in stored Procedure we can do programming,control flow,parameters,error handling
+
+syntax: 
+Create Procedure procedure-name
+as 
+begin
+  write query here(set of sql stmt)
+end
+Step 2: Execute the stored procedure
+exec procedure-name
+
+Task--write a query for us customers find the Total number of customers and average Score
+*/
+Select avg(score) avgScore,count(customerID) TotalUSCustomer
+from Sales.Customers 
+where Country='USA' group by Country
+
+create procedure USACustomer
+as
+begin
+    Select avg(score) avgScore,count(customerID) TotalUSCustomer
+    from Sales.Customers 
+    where Country='USA' group by Country
+end
+
+exec USACustomer
+/* Parameters:placeholders used to pass values as input from the caller to the procedure,
+allowing dynamic data to be processed
+
+task-for the german customers find the total numver of customers and the average score*/
+Select avg(score) avgScore,count(customerID) TotalUSCustomer
+    from Sales.Customers 
+    where Country='Germany' --here only changes is country name 
+--avoid repetition--if you notice repeated code in your project its a sign that your code can be improved
+
+Create procedure GermanyCustomerDetailss
+@Country Nvarchar(50)='USA'--parameter define,here USA is default value
+as
+begin 
+    Select avg(score) avgScore,count(customerID) TotalUSCustomer
+  
+    from Sales.Customers 
+    where Country=@Country
+end
+exec GermanyCustomerDetailss--if we not pass any value than take default value
+exec GermanyCustomerDetailss @Country='germany'
+exec GermanyCustomerDetailss @Country='usa'
+
+alter procedure GermanyCustomerDetailss
+@Country Nvarchar(50)--parameter define
+as
+begin 
+    Select avg(score) avgScore,count(customerID) TotalUSCustomer
+    from Sales.Customers 
+    where Country=@Country;
+
+    select count(*) totalCustomers,
+    sum(sales) TotalSale
+    from Sales.orders o Join 
+    Sales.Customers c
+    on c.customerID=o.customerID
+    where Country=@Country;
+end
+
+
+exec GermanyCustomerDetailss @Country='germany'
+exec GermanyCustomerDetailss @Country='usa'
+
+drop procedure GermanyCustomerDetails
+
+/*variables-placeholdes used to store values to be used later in the procedure
+parameters pass values into a stored procedure or return values back to the caller.
+variables temporarily store and manipulate data during its excution*/
+
+find total customer and total sales for usA
+select count(*) totalCustomers,
+sum(sales) TotalSale
+from Sales.orders o Join 
+Sales.Customers c
+on c.customerID=o.customerID
+where Country='USA'
+
+alter procedure GermanyCustomerDetailss
+@Country Nvarchar(50)--parameter define
+as
+begin 
+    declare @avgScore float,@TotalCustomer int --variables define
+    Select 
+    @avgScore=avg(score),--variables used
+    @TotalCustomer=count(customerID) 
+    from Sales.Customers 
+    where Country=@Country;
+
+    print 'Total customer from '+@Country+' : '+cast(@TotalCustomer as Nvarchar);--variables used
+    print 'Average score from '+@Country+' : '+cast( @avgScore as Nvarchar);
+
+    select count(*) totalCustomers,
+    sum(sales) TotalSale
+    from Sales.orders o Join 
+    Sales.Customers c
+    on c.customerID=o.customerID
+    where Country=@Country;
+end
+
+exec GermanyCustomerDetailss @Country='germany'
+exec GermanyCustomerDetailss @Country='usa'
+
+--stored Procedure Control flow if else
+
+alter procedure GermanyCustomerDetailss
+@Country Nvarchar(50)--parameter define
+as
+begin 
+    declare @avgScore float,@TotalCustomer int --variables define
+
+    print('if we found null change with 0')
+    if exists(select 1 from Sales.Customers where score is null and country=@Country)
+    begin
+        print('Updating null with 0')
+        update Sales.customers
+        set score=0
+        where score is null and country=@country
+      
+    end
+    else
+    begin
+     print('No null founds')
+    end;
+
+    Select 
+    @avgScore=avg(score),--variables used
+    @TotalCustomer=count(customerID) 
+    from Sales.Customers 
+    where Country=@Country;
+
+    print 'Total customer from '+@Country+' : '+cast(@TotalCustomer as Nvarchar);--variables used
+    print 'Average score from '+@Country+' : '+cast( @avgScore as Nvarchar);
+
+    select count(*) totalCustomers,
+    sum(sales) TotalSale
+    from Sales.orders o Join 
+    Sales.Customers c
+    on c.customerID=o.customerID
+    where Country=@Country;
+end
+
+exec GermanyCustomerDetailss @Country='germany'
+exec GermanyCustomerDetailss @Country='usa'
+
+/**erro handling--
+begin try
+  sql stmts that might cause error
+end
+begin catch
+  sql stmts to handle the error
+end*/
+
+alter procedure GermanyCustomerDetailss
+@Country Nvarchar(50)--parameter define
+as
+begin 
+    begin try
+        declare @avgScore float,@TotalCustomer int --variables define
+
+        print('if we found null change with 0')
+        if exists(select 1 from Sales.Customers where score is null and country=@Country)
+            begin
+                print('Updating null with 0')
+                update Sales.customers
+                set score=0
+                where score is null and country=@country
+            end
+        else
+            begin
+             print('No null founds')
+            end;
+
+        Select 
+        @avgScore=avg(score),--variables used
+        @TotalCustomer=count(customerID) 
+        from Sales.Customers 
+        where Country=@Country;
+
+        print 'Total customer from '+@Country+' : '+cast(@TotalCustomer as Nvarchar);--variables used
+        print 'Average score from '+@Country+' : '+cast( @avgScore as Nvarchar);
+
+        select count(*) totalCustomers,
+        sum(sales) TotalSale,
+        1/0
+        from Sales.orders o Join 
+        Sales.Customers c
+        on c.customerID=o.customerID
+        where Country=@Country;
+    end try
+    begin catch
+     print('an error occured');
+     print('Error message:'+error_message());
+     print('Error number:'+cast (error_number() as nvarchar));
+     print('Error line:'+cast (error_line() as nvarchar))
+     print('Error procedure:'+error_procedure());
+    end catch
+end
+
+exec GermanyCustomerDetailss @Country='germany'
+exec GermanyCustomerDetailss @Country='usa'
+
+
+/*triggers--
+Special Stored procedure (set of stmts)
+that automatically runs in response to a specific event on a table or view
+trigger  types: 1.DML triggers-insert ,update,delete(after-run after event,instead of-run during event)
+2.DDL triggers: create ,alter,drop
+3.loggon
+
+tiggers syntax:
+create trigger TriggerName On tableName
+after insert,update,delete
+begin
+--sql stmts
+end
+*/
+
+create table Sales.employeeLogs(
+LogID int identity(1,1) primary Key,
+EmployeeID int,
+LogMessage varchar(255),
+LogDate date
+)
+Create trigger trg_afterInsertEmployee On sales.employees
+after insert
+as
+begin
+  insert into sales.employeeLogs(EmployeeId,LogMessage,LogDate)
+  select employeeID,
+  'New employee added ='+cast (employeeID as varchar),
+  getdate()
+  from inserted --inserted-vitual table that holds a copy of the rows
+  --that are being inserted into the target tables
+end
+select * from Sales.employeeLogs
+select * from Sales.Employees
+insert into Sales.employees values(6,'Harshika','Patel','Marketing','1996-11-02','F',85000,2)
+insert into Sales.employees values(7,'Harshika','Patel','Marketing','1996-11-02','F',85000,2)
+
+
+---Practice queation-------
+Select *,concat(round(MontlySale*100 /sum(MontlySale) over() ,2),'%') percentagee from
+(select sum(sales) MontlySale,month(orderdate) Monthh
+from Sales.Orders
+group by month(orderdate))t
+
+select * from Sales.Orders order by customerID
+select  *,dense_rank() over(Order by TotalSale desc) rank
+from(select customerID,sum(sales) TotalSale from 
+Sales.orders
+group by(CustomerID))t
+
+select *,coalesce(lag(MontlySale) over(order by Monthh),0) previousMonthsale,
+ MontlySale-coalesce((lag(MontlySale) over(order by Monthh)),0) saleDifference,
+  MontlySale-coalesce((lag(MontlySale) over(order by Monthh)),0)*100/nullif(lag(MontlySale) over(order by Monthh),0)  percentageChange
+from(select sum(sales) MontlySale,month(orderdate) Monthh
+from Sales.Orders
+group by month(orderdate))t
+
+with MonthlySales as(
+select sum(sales) MontlySale,month(orderdate) Monthh
+from Sales.Orders
+group by month(orderdate)
+),
+previousMonthSale as(
+select *,coalesce(lag(MontlySale) over(order by Monthh),0) previousMonthsales,
+MontlySale-coalesce((lag(MontlySale) over(order by Monthh)),0) saleDifference
+
+from MonthlySales
+)
+select *, saleDifference*100/nullif(previousMonthsales,0) percentageDifference from previousMonthSale
+
+SELECT
+    YEAR(OrderDate) AS SalesYear,
+    MONTH(OrderDate) AS SalesMonth,
+    COUNT(*) AS TotalOrders,
+    SUM(Sales) AS TotalRevenue
+FROM Sales.Orders
+WHERE OrderDate >= '20250101'
+  AND OrderDate < '20260101'
+GROUP BY
+    YEAR(OrderDate),
+    MONTH(OrderDate)
+ORDER BY SalesYear, SalesMonth;
+
+/* Sql Indexes:Data Structure provides quick access to data optimizing the speed of your queries
+
+--1.structure--1.clustered index
+               2.non-clusted index
+--2.storage--1.rowstore index
+             2.columnstore Index
+--3.Functions--1.unique index
+               2.filterd Index
+trade-off--some indexes are better for reading others for writing performance.
+
+when we create table or show a table we see it store it data in col and rows but in back actually it 
+store as data file(.mdf) formate or in page formate
+
+page-the smallest unit of data storage in a database(8kb)
+it stores anything (data,metadata,indexex,etc)--1.data page,2..index page
+
+Data page has header,row1, row2, row3...some free space ,offset
+
+which order we inserted data it inserted in data page , no order and it only insert data based on their limit if
+one datapage allows to insert 5 rows than it insert that much only and next data insert in new page
+
+this type of storage called heap storage--table without non-clustered index
+fast write but slow in reading because it store randomly 
+for read it need to scan from 1st datapage -so it take too much time --it called full table scan
+full table scan:scans entire table page by page and row by row searching for data
+Heap Structure
+
+clustered index:--
+B-tree-balance tree-hierrchical structure storing data at leaves, to help quickly located data
+
+root node
+-intermediate node
+--leaf node
+
+Root level: Starting point for searching.
+Intermediate level: Helps navigate through the index.
+Leaf level: Contains the actual table data in clustered key order.
+index page-it storeskey values(Pointers)to another page. it doesnot store the actual rows
+we have pointer for each group or cluster thats why we alled it clustered index
+
+
+                   Clustered Index                                     Non -Clustered index
+definition         physically sorts and stores rows                separate structure with pointers to the data
+number of idexes   one index per table                             multiple indexex are allowed
+read perfromance   faster                                          slower
+write perfromance  slower,due to poyential data row reorderig      faster,since physical data order is unaffected
+storage efficiency more storage-efficient                          requires additional storage space
+use case           uniuqe column                                   column frequently used in
+                   not frequently modified col                     search conditions and joins
+                   improve range query performance                 exact match queries
+
+index syntax:
+
+create clustered|Nonclustered index index_name on table_name (col1,col2,col3...)
+            this part is optional if we not defined anything default is nonclustered
+
+if we defined any primary key in table it automatically creates a clusterd index by default*/.
+select *
+into Sales.DBCustomers
+from Sales.customers
+
+create clustered index idx_DBCustomers_customerID on Sales.DBCustomers (CustomerID)
+drop index idx_DBCustomers_customerID on Sales.DBCustomers 
+create clustered index idx_DBCustomers_customerID on Sales.DBCustomers (CustomerID)
+select * from Sales.DBCustomers
+where lastName='brown'--if our query take lot of time than we go and create non clustered index
+
+create nonclustered index idx_DBCustomers_lastName on Sales.DBCustomers (lastname)
+create index idx_DBCustomers_firstName on Sales.DBCustomers (firstname)
+
+select Sales.DBCustomers
+where country='USA' and score>500--if this query too long than create index 
+create index idx_DBCustomers_CountryScore on Sales.DBCustomers (country,score)--here order is matter based 
+--on query for columns 
+---leftmost prefix rule:index works only if your query filters
+--start from the first column in the index and follow its order
+--we used index for searching from big tables
+
+/* RowStore Index:
+data store in row groups for example 1 to 10 rows store in one data page like wise 11 to 20 in others 
+
+in columnsStore Index--
+1.row groups--first table divide in row groups -heap table
+2.column segment--after it seperated by columns fro exapme 1 to 1o rows of ID column like wise 11 to 20 rows of id in other data page 
+so here it divide by rows and columns
+1.rows into row groups-2.columns segment-3.data compression 4,store data in pages-large object page-loB page
+3.compression-for example status it has value active and inactive it repeated 2m times
+dictionary active:1,inactrive:2
+storing result in databases
+
+Feature	               Rowstore Index	                           Columnstore Index
+
+Definition	           Organizes and stores data row by row	       Organizes and stores data column by column
+Storage Efficiency	   Less efficient in storage	               Highly efficient with compression
+Read/Write             Fair speed for read & write operations	   Fast read performance; slower write 
+Optimization                                                       performance
+
+I/O Efficiency	      Lower (retrieves all columns                 Higher (retrieves specific columns)
+                      when using SELECT *)
+Best For	          OLTP (Transactional)                         OLAP (Analytical)
+
+                      E-commerce, banking,                         Data warehouse, business intelligence,
+                      financial systems, order processing	        reporting, analytics
+
+Use Case	        High-frequency transaction applications          Big data analytics
+                    Quick access to complete records                 Scanning large datasets
+                    Frequent INSERT, UPDATE and DELETE               Fast aggregation (SUM, AVG, COUNT)
+
+how to create columnStore Index syntax
+Create clustered|non clustered [ColumnStore ] Index index_name on table_name (col1,col2,.....)
+rowStore--Create non clustered Index index_name on table_name (col1,col2,.....)
+          Create clustered Index index_name on table_name (col1,col2,.....)
+columnStore--Create non clustered [ColumnStore] Index index_name on table_name (col1,col2,.....)
+             Create clustered [ColumnStore] Index index_name on table_name 
+
+             rules:you can not specific columns in clustered index columnsstore
+rowstore is default so when we create row_store we do not need to writre RoWStore
+*/
+
+Create clustered ColumnStore Index index_name on Sales.DBCustomers--so we alredy created row clustered index and in one table 
+--we are eligible only one clustered index so first we drop row index and after create col store index
+drop index [idx_DBCustomers_customerID] on Sales.DBCustomers
+Create clustered ColumnStore Index index_name on Sales.DBCustomers
+drop index index_name on Sales.DBCustomers
+Create Nonclustered ColumnStore Index index_name on Sales.DBCustomers(Firstname)
+--only on columns store idex in one table
+
+--heap
+select * into factInternetSales_hp from factInternetSales
+--rowstore
+select * into factInternetSales_rs from factInternetSales
+
+create clustered index idx_factInternetSales_rs_pk on  factInternetSales_rs
+(SalesOrderNumber,SalesOrderLineNumber)
+--columnstore
+select * into factInternetSales_cs from factInternetSales
+
+create clustered columnstore index idx_factInternetSales_cs_pk on  factInternetSales_cs
+
+/*unique index-ensure no duplicate values exist in specific column
+benefits-1.enforce uniqueness       
+         2.slightly increase query performance
+         3.
+Create unique clustered|non clustered [ColumnStore ] Index index_name on table_name (col1,col2,.....)
+default is not unique*/
+select * from Sales.Products
+Create unique nonclustered Index unique_index_category on Sales.Products (category)--here we get 
+--error because category has duplicate
+Create unique nonclustered Index unique_index_product on Sales.Products (product)
+drop index unique_index_category on Sales.Products
+insert into Sales.Products(productID,product) values(106,'Caps')--here we get error
+--Cannot insert duplicate key row in object 'Sales.Products' with unique index 'unique_index_product'. 
+--The duplicate key value is (Caps).
+
+/* filterted index- an index that includes only rows meeting the specified conditions
+rules-we cannot create a filtered index on a clustered index.
+you can not create a filtered index on a columnstore index.
+Create unique nonclustered Index index_name on tablename (col1,col2,col3,..)
+where [condition]*/
+select * from Sales.Customers 
+where country='USA'--because of index it runs faster if select different country than it take more time
+create nonclustered index idx_customers_country on Sales.customers (country)
+where country='USA'
+
+/* when to use:
+heap-fast insert for staging tables
+clustred index-for primary keys -if not then for date columns-this row store index-OLTP-Online Transaction Processing
+column store index-for analytical queries -reduce size of large table-OLAP-Online Analytical Processing
+non clustered index--for non-pk columns-foreign keys ,joins and filters
+filtered index-targat sunset of data reduce size of index
+unique index-enforce uniqueness improve query speed
+
+index mamagement and monitoring
+index management
+1.monitor index usage
+2.monitor missing indexes
+3.monitor duplicate indexes
+4.update statistics
+5.monitor fragmentations*/
+
+sp_helpindex 'sales.DBCUstomers'
+--1.monitor index usage
+select tbl.name,idx.object_id,idx.name,idx.type_desc,idx.is_primary_key,idx.is_unique,idx.is_disabled,
+s.user_seeks,s.user_scans,s.user_lookups,s.user_updates,s.last_user_scan,s.last_system_seek
+from Sys.indexes idx join sys.tables tbl
+on idx.object_id=tbl.object_id
+left join sys.dm_db_index_usage_stats s
+on s.object_id=idx.object_id
+order by tbl.name,idx.name
+
+select * from sys.dm_db_index_usage_stats
+--2.monitor missing indexes
+select fs.salesorderNumber,dp.Englishproductname,dp.color
+from factInternetSales fs
+inner join
+dimproduct dp
+on fs.productkey=dp.productkey
+where dp.color='Black'
+and fs.orderdatekey between 20101229 and 20101231
+select * from sys.dm_db_missing_index_details
+
+--3.monitor duplicate indexes
+select t.name,c.name,i.name,i.type_desc ,count(*)over(partition by t.name , c.name)
+from 
+Sys.indexes i join sys.tables t on i.object_id=t.object_id
+
+join sys.index_columns ic on i.object_id=ic.object_id and i.index_id=ic.index_id
+
+join sys.columns c on c.object_id=ic.object_id and c.column_id=ic.column_id
+
+--4.update statistics
+--1.weekly job to update statistics on weekends
+--2.after migrationg data
+SELECT 
+    SCHEMA_NAME(t.schema_id) AS SchemaName,
+    t.name AS TableName,
+    s.name AS StatisticName,
+    sp.last_updated As LastUpdate,
+    DATEDIFF(day, sp.last_updated, GETDATE()) As LastUpdateDay,
+    sp.rows AS 'Rows',
+    sp.modification_counter AS ModificationsSinceLastUpdate
+FROM sys.stats AS s
+JOIN sys.tables t 
+ON  s.object_id = t.object_id
+CROSS APPLY sys.dm_db_stats_properties(s.object_id, s.stats_id) AS sp
+ORDER BY 
+sp.modification_counter DESC;
+update statistics Sales.DBCustomers _WA_Sys_00000003_2739D489
+update statistics Sales.DBCustomers
+exec sp_updatestats
+
+--5.monitor fragmentations
+--unused spaces in data pages
+--data pages are out of order
+--fragmentation methods
+--1.reorganize
+  --defregments leaf notes to keep them sorted
+  --light operation
+--2.rebuild
+   --recreates index from scrtch
+   --heavy operation
+select * from sys.dm_db_index_physical_stats(db_id(),null,null,null,'Limited')
+--avg_fragmentation_in_percent(indicate how out-of order pages are within the index) 
+--0% means no fragmentation(perfect)-
+--100% means index is completely fragmentaed(out of order)
+
+SELECT
+    tbl.name AS TableName,
+    idx.name AS IndexName,
+    s.avg_fragmentation_in_percent,
+    s.page_count
+FROM sys.dm_db_index_physical_stats(DB_ID(), NULL, NULL, NULL, 'LIMITED') AS s
+INNER JOIN sys.tables tbl
+ON s.object_id = tbl.object_id
+INNER JOIN sys.indexes AS idx
+ON idx.object_id = s.object_id
+AND idx.index_id = s.index_id
+ORDER BY s.avg_fragmentation_in_percent DESC
+--0 to 10%-no issue
+--1. Reorganize Index (For 10% to 30% Fragmentation)
+ALTER INDEX PK_DimAccount
+ON DimAccount
+REORGANIZE;
+--2. Rebuild Index (For > 30% Fragmentation)
+ALTER INDEX PK_DimAccount
+ON DimAccount
+REBUILD;
+/* Excution plan::
+
+estimated vs Actual Plans:
+if the predictions don't match the actual execution plan, this indicate issues like in accurate statistics or 
+outdated indexx, leading to poor performance.*/
+select * 
+into factresellerSales_hp
+from factresellerSales
+
+select * from factresellerSales_hp--here it scan table because no indexs avaible
+/*excution plan- read data from right to left
+table scan-reads the entire table, page by page and roe by row"everything"which can
+lead ti slower query perfromance in large tables."*/
+
+select * 
+from factresellerSales--here we find in properties clustered index scan
+--index scan-scans all data in an index to find matching rows
+
+--excution plan:heap vs clutered index
+select * from factresellerSales_hp 
+order by SalesOrderNumber--this query (heap is slower than clustred because DB must perform extra
+--work to sort rows)
+
+select * from factresellerSales
+order by SalesOrderNumber--this is clutered index
+
+
+select * from factresellerSales
+where carrierTrackingNumber='4911-403C-98'
+order by SalesOrderNumber
+create nonclustered index idx_factresellSales on factresellerSales(carrierTrackingNumber)
+--index seek-quickly locates specific rows in an index
+select * from factresellerSales_hp
+where carrierTrackingNumber='4911-403C-98'
+order by SalesOrderNumber
+
+/* join algorithms:
+nested loops:compares tables row by row;best for small tables
+hash match:matches rows using a hash table:best for large tables
+merge join:Merge two sorted tables;efficient when both are sorted*/
+
+--rowatore vs columnStore
+
+
+select dp.englishProductName,
+sum(fs.SalesAmount)
+from factresellerSales fs
+join
+dimProduct dp
+on fs.productkey=dp.productkey
+group by dp.englishProductName
+
+
+create clustered columnstore index idx_factselsales on factresellerSales_hp
+
+select dp.englishProductName,
+sum(fs.SalesAmount)
+from factresellerSales_hp fs
+join
+dimProduct dp
+on fs.productkey=dp.productkey
+group by dp.englishProductName
+
+/*Sql hints:commands you add to a query to force the database to run it in a specific way for better performance*/
+
+select o.sales,c.country from sales.orders o
+join sales.customers c with(forceseek)--with this option hash join is not work write either
+on o.customerid=c.customerid
+option(hash join)--here we giving hint to sql using option
+
+select o.sales,c.country from sales.orders o
+join sales.customers c with(index(PK_customers))
+on o.customerid=c.customerid
+
+/*tips|sql Hints
+1.test hints in all project environments (Dev ,PROD)as perfromance may very.
+2.hints are quick fixes (workaround not solution)you still have to find the cause and fix it.
+
+--indexing stretegy:the golden rule
+====================================================================
+                         INDEXING STRATEGY
+#1. Initial Indexing Strategy
+--------------------------------------------------------------------
+- OLAP (Online Analytical Processing):
+    * Optimize Read Performance
+    * Switch large, frequently used tables into ColumnStore
+
+- OLTP (Online Transaction Processing):
+    * Optimize Write Performance
+    * Use Clustered Index on Primary Keys
+#2. Usage Patterns Indexing
+--------------------------------------------------------------------
+    1. Identify frequently used Tables & Columns
+    2. Choose Right Index
+    3. Test Index
+#3. Scenario-Based Indexing
+--------------------------------------------------------------------
+    1. Identify Slow Queries
+    2. Check Execution Plan
+    3. Choose Right Index
+    4. (Test) Compare Execution Plans
+#4. Monitoring & Maintenance
+--------------------------------------------------------------------
+    1. Monitor Index Usage
+    2. Monitor Missing Indexes
+    3. Monitor Duplicate Indexes
+    4. Update Statistics
+    5. Monitor Fragmentations
+*/
+
+
+/*partitions:-divides big Table into smaller Partitions
+while still being treated as a single logical table
+
+big table 
+1.partition function-define the logic on how to divide your data into partitions!
+based on Partition key like (column,Region..)
+2.file groups
+3.data files
+4.partition schema*/
+--1.partition function
+create partition function PartitionByYear (Date)
+as Range left for values('2023-12-31','2024-12-31','2025-12-31')
+
+select * from sys.partition_functions
+--2.file groups--logical container of one or more data files to help organize partitions
+Alter Database SalesDB add filegroup FG_2023;
+Alter Database SalesDB add filegroup FG_2024;
+Alter Database SalesDB add filegroup FG_2025;
+Alter Database SalesDB add filegroup FG_2026;
+
+Alter Database SalesDB remove filegroup FG_2023;
+
+select * from sys.filegroups
+where type='fg'
+--3.data files--.ndf
+
+Alter Database SalesDB add file(
+name=p_2023,--logical Name
+fileName='C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\DATA\p_2023.ndf'
+)to filegroup FG_2023;
+
+Alter Database SalesDB add file(
+name=p_2024,--logical Name
+fileName='C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\DATA\p_2024.ndf'
+)to filegroup FG_2024;
+
+Alter Database SalesDB add file(
+name=p_2025,--logical Name
+fileName='C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\DATA\p_2025.ndf'
+)to filegroup FG_2025;
+
+Alter Database SalesDB add file(
+name=p_2026,--logical Name
+fileName='C:\Program Files\Microsoft SQL Server\MSSQL17.SQLEXPRESS\MSSQL\DATA\p_2026.ndf'
+)to filegroup FG_2026;
+
+
+select m.name,* from sys.filegroups f join
+sys.master_files m
+on f.data_space_id=m.data_space_id
+where f.name like 'FG%'
+
+--4.partition schema
+CREATE PARTITION SCHEME schemepartitionbyyear
+AS PARTITION PartitionByYear
+TO (FG_2023, FG_2024, FG_2025, FG_2026);
+
+-- Query lists all Partition Scheme
+
+SELECT
+    ps.name AS PartitionSchemeName,
+    pf.name AS PartitionFunctionName,
+    ds.destination_id AS PartitionNumber,
+    fg.name AS FilegroupName
+FROM sys.partition_schemes ps
+JOIN sys.partition_functions pf ON ps.function_id = pf.function_id
+JOIN sys.destination_data_spaces ds ON ps.data_space_id = ds.partition_scheme_id
+
+JOIN sys.filegroups fg ON ds.data_space_id = fg.data_space_id
+
+--building partition -create the partitioned table
+create table Sales.orders_partitioned
+(
+orderID Int,
+orderdate date,
+sales int
+)on schemepartitionbyyear(orderdate)
+insert into Sales.orders_partitioned values(1,'2023-05-15',100)
+insert into Sales.orders_partitioned values(2,'2023-05-16',100)
+insert into Sales.orders_partitioned values(1,'2024-05-15',100)
+insert into Sales.orders_partitioned values(3,'2026-05-15',100)
+insert into Sales.orders_partitioned values(4,'2025-05-15',100)
+select * from Sales.orders_partitioned
+
+SELECT
+    p.partition_number AS PartitionNumber,
+    f.name AS PartitionFilegroup,
+    p.rows AS NumberOfRows
+FROM sys.partitions p
+JOIN sys.destination_data_spaces dds ON p.partition_number = dds.destination_id
+JOIN sys.filegroups f ON dds.data_space_id = f.data_space_id
+WHERE OBJECT_NAME(p.object_id) = 'Orders_Partitioned';
+
+/*partition benefits - it reduce the time of read , fetch data from the table ,
+without partition it read all rows of table with partition it read particular partion data based on contion
+and that we we check using excution plan */
+
+select * 
+into  Sales.orders_Nopartitioned
+from Sales.orders_partitioned
+
+select * from Sales.orders_partitioned
+where OrderDate='2023-05-15'
+select * from Sales.orders_Nopartitioned
+where OrderDate='2023-05-15'
+
+/* performance tips:
+when we working with small-medium table that timw we not feel query optimization
+but when we wroking with millions of data that time golden rules:
+always check excution plan to confirm perfromance improvements when optimizing your query
+if you notice theres no improvement then just focus on readability
+
+best practice -fetching data
+
+Tip-1.select only what needed
+select * from Sales.Customers--bad practice
+instead of erite
+select firstname,lastname from sales.customes--good practice
+
+tip2-avoid unnecessary distinct and order by 
+
+tip3-for exploration purpose limit the rows 
+so here we can use top 10*/
+select top 10 firstName,lastName from sales.customers
+
+/*Best practice for Filtering data
+tip4:create non clustered index on frequently used columns in where cluase
+*/
+select * from Sales.Orders where OrderStatus='delivered'--so here we frequently used orderStatus for filter data
+--so for that we create non clustred index
+create nonclustered index idx_order_status on Sales.orders (OrderStatus)where OrderStatus='delivered'
+--tip5--avoid applying functions to columns in where claauses
+
+select * from Sales.Orders where Lower(OrderStatus)='delivered'--bad pratice
+select * from Sales.Customers where substring(firstName,1,1)='A'--functions block the usage of index----bad pratice
+--instead of use
+select * from Sales.Customers where firstName like 'A%'--good pratice
+
+
+select * from Sales.Orders where Year(OrderDate)=2025--bad pratice-if you function we can not use index
+select * from Sales.Orders where OrderDate between '20250101' and '20251231'--good pratice-here we used index
+
+--tip6:avoild using wildcards, as they prevent index usage
+
+select * from Sales.Customers where
+lastNAme like '%gold%'--bad practice
+
+select * from Sales.Customers where
+lastNAme like 'gold%'--good practice
+
+--tip7-use In instead of mutltiple OR
+select * from Sales.Orders
+where CustomerID=1 Or CustomerID=2 Or customerID=3 --bad Pracice
+
+select * from Sales.Orders
+where CustomerID in (1,2,3)--good practice
+
+--tip-8 understand the speed of joins and use inner join when possible
+--Best Performance
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+--slightly slower Performance 
+select c.firstName,c.lastName,o.orderid from Sales.customers c right join sales.Orders o
+on c.customerid=o.customerid
+select c.firstName,c.lastName,o.orderid from Sales.customers c left join sales.Orders o
+on c.customerid=o.customerid
+--worst Performance
+select c.firstName,c.lastName,o.orderid from Sales.customers c right outer join sales.Orders o
+on c.customerid=o.customerid
+--tip9-use explicit join(ansi join) instead of implicit join(non -ansi join)
+
+--good practice--explicit join(ansi join)-where provide word inner join like that
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+
+--bad practice--implicit join(non-ansi join)-where join two table with comma and put condition in where clause
+select c.firstName,c.lastName,o.orderid from Sales.customers c,sales.Orders o
+where c.customerid=o.customerid
+
+--tip-10 make sure to index the columns used in the on cluase
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid--mostly it is primary key which join two tables
+create nonclustered index idx_orders_customerid on Sales.orders(customerID)
+
+--tip11-filter before joining( big tables)
+
+--filter after join(where )
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+where orderStatus='delivered'
+
+--filter during join(on)
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+and orderStatus='delivered'
+
+--filter before join (subquery)
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join 
+(select * from sales.Orders where orderStatus='delivered') o
+on c.customerid=o.customerid
+
+--tip-12-aggregate before joing(big tables)
+--grouping and joining for small aned medium tables this one is good
+
+select c.firstName,c.customerid,count(o.orderid) as OrderCount
+from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+group by c.firstName,c.customerid
+
+--preaggregated subquery-best one for bid tables
+select c.firstName,c.customerid,o.OrderCount
+from Sales.customers c inner join 
+(select customerid,count(orderid) as OrderCount from sales.Orders group by customerid)o
+on c.customerid=o.customerid\
+
+--correlated subsquery-worst one
+select c.firstName,c.customerid,
+(select count(o.orderid) from sales.Orders o where c.customerid=o.customerid)OrderCount
+from Sales.customers c inner join 
+sales.Orders o
+on c.customerid=o.customerid
+
+--tip13-use union instead of OR while joining tables
+--bad pracice
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+OR c.customerid=o.salespersonID
+
+--go0d practice
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+union
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.salespersonID
+
+--tip14:check for nested loops and use sql hints
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid--this is nested loops 
+
+--best practice for having big table and small table
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+option(Hash Join)--here we give hint 
+
+--tip15-use union all instead of using union |duplicates are acceptable
+select customerID from Sales.orders
+union--no duplicate
+Select CustomerID from Sales.ordersArchive
+
+--good practice
+select customerID from Sales.orders
+union all--allows duplicate
+Select CustomerID from Sales.ordersArchive
+
+--tip16-use union all+distinct instead of using union |if you do not need duplicate
+select customerID from Sales.orders
+union--no duplicate
+Select CustomerID from Sales.ordersArchive
+
+--good practice
+select distinct customerID from 
+(select customerID from Sales.orders
+union all --allows duplicate
+Select customerID from Sales.ordersArchive )t
+
+--tip17 USe ColumnStore index for Aggreagation On Large Table
+select customerId ,count(OrderId) as OrderCount
+from sales.Orders
+group by customerID
+create clustered columnstore index idx_orders_orderid on Sales.orders
+
+--tip18 pre aggregated data and store it in new table for reporting
+select Month(OrderDate) orderMonth,sum(sales)  as totalSale
+into sales.SalesSummary--here we put our data in new table
+from Sales.Orders
+group by Month(OrderDate)
+
+select * from sales.SalesSummary
+
+--tip19-join vs exist vs in
+
+--join-best practice if the performance equals to exiust
+select c.firstName,c.lastName,o.orderid from Sales.customers c inner join sales.Orders o
+on c.customerid=o.customerid
+where country='USa'
+
+--exists-best performance use it for large tables
+select o.orderid ,o.sales from Sales.orders o 
+where exists (select 1 from sales.customers c where c.customerid=o.customerid and
+country='USa')
+
+--in(bad Practice)
+select o.orderid ,o.sales from Sales.orders o 
+where o.customerID in (select customerID from sales.customers c where 
+country='USa')
+
+--tip20:avoid redundant logic in query
+--bed practice
+select  employeeID,FirstName,salary,'Above average' status from sales.employees
+where salary > (select avg(salary) from sales.employees)
+union all
+select  employeeID,FirstName,salary,'Below average' status from sales.employees
+where salary < (select avg(salary) from sales.employees)
+
+--good practice
+
+select employeeID,Firstname,Salary,
+case when salary > (select avg(salary) from sales.employees) then 'above avg'
+     when salary < (select avg(salary) from sales.employees) then 'below avg'
+end status
+from sales.employees
+
+--tip21:avoid datatype varchar and text
+
+--bad practice
+CREATE TABLE Customers (
+    customerid INT PRIMARY KEY,
+    fname VARCHAR(max) NOT NULL,
+    lname text NOT NULL,
+    country VARCHAR(255),
+    totalpurachse DECIMAL(12, 2) DEFAULT 0.00,
+    score varchar,
+    birthdate varchar(),
+    empID INT,
+    
+    -- Foreign Key Constraint referencing an Employees table
+    CONSTRAINT FK_Customer_EmpID 
+    FOREIGN KEY (empID) REFERENCES Employees(EmployeeID)
+);
+
+--good practice
+CREATE TABLE Customers (
+    customerid INT PRIMARY KEY,
+    fname VARCHAR(max) NOT NULL,
+    lname VARCHAR(50) NOT NULL,
+    country VARCHAR(255),
+    totalpurachse DECIMAL(12, 2) DEFAULT 0.00,
+    score int,
+    birthdate date,
+    empID INT,
+    
+    -- Foreign Key Constraint referencing an Employees table
+    CONSTRAINT FK_Customer_EmpID 
+    FOREIGN KEY (empID) REFERENCES Employees(EmployeeID)
+);
+--tip22:avoid(MAx) unnecessarily large lengths in data types
+
+CREATE TABLE Customers (
+    customerid INT PRIMARY KEY,
+    fname VARCHAR(50) NOT NULL,--give needed length not max and 255
+    lname VARCHAR(50) NOT NULL,--use not null is good practice
+    country VARCHAR(50),
+    totalpurachse DECIMAL(12, 2) DEFAULT 0.00,
+    score int,
+    birthdate date,
+    empID INT,
+    
+    -- Foreign Key Constraint referencing an Employees table
+    CONSTRAINT FK_Customer_EmpID 
+    FOREIGN KEY (empID) REFERENCES Employees(EmployeeID)
+);
+--tip23:use the Not null constaint where applicable
+--tip24:ensure all your table have a clustered primary key
+CREATE TABLE CustomersInfo (
+    customerid INT PRIMARY KEY,--this is best practice to add primary key
+    fname VARCHAR(max) NOT NULL,
+    lname VARCHAR(50) NOT NULL,
+    country VARCHAR(255),
+    totalpurachse DECIMAL(12, 2) DEFAULT 0.00,
+    score int,
+    birthdate date,
+    EmployeeID INT,
+    
+    -- Foreign Key Constraint referencing an Employees table
+    CONSTRAINT FK_Customer_EmployeeID
+    FOREIGN KEY (EmployeeID) REFERENCES sales.Employees(EmployeeID)
+);
+--tip25:create a non-clustered index for foreign key that are used frequently
+create nonclustered index idx_foreign_key_CustomerInfo on customersInfo(EmployeeID)
+--tip26-best practice for index-avoid over indexing
+
+--tip27:drop unused indexex
+--tip28:update statistics weekly
+--tip29:reorganize and rebuild indexex weekly
+--tip30:partion large tables (facts)to improve pefromance
+        --next apply a columnstore index for the best results
+
+--AI and SQL
+/*
+#1 Solve an SQL Task   
+[PROMPT...]   
+In my SQL Server database, we have two tables:   
+The first table is orders with the following columns: order_id, sales, customer_id, product_id.   
+The second table is customers with the following columns: customer_id, first_name, last_name, country.   
+Do the following:   
+- Write a query to rank customers based on their sales.   
+- The result should include the customer's customer_id, full name, country, total sales, and their rank.   
+- Include comments but avoid commenting on obvious parts.   
+- Write three different versions of the query to achieve this task.   
+- Evaluate and explain which version is best in terms of readability and performance
+
+#2 Improve the Readability   
+[PROMPT...]   
+The following SQL Server query is long and hard to understand.   
+Do the following:   
+- Improve its readability.   
+- Remove any redundancy in the query and consolidate it.   
+- Include comments but avoid commenting on obvious parts.   
+- Explain each improvement to understand the reasoning behind it.   
+[ SQL Query GOES HERE ]
+
+#3 Optimize the Performance Query   
+[PROMPT...]   
+The following SQL Server query is slow.   
+Do the following:   
+- Propose optimizations to improve its performance.   
+- Provide the improved SQL query.   
+- Explain each improvement to understand the reasoning behind it.   
+[ SQL Query GOES HERE ]
+
+#4 Optimize Execution Plan   
+[PROMPT...]   
+The image is the execution plan of SQL Server query.   
+Do the following:   
+- Describe the execution plan step by step.   
+- Identify performance bottlenecks and issues.   
+- Suggest ways to improve performance and optimize the execution plan.   
+[ SQL Query GOES HERE ]
+
+#5 Debugging   
+[PROMPT...]   
+The following SQL Server Query causing this error: [Error Message GOES HERE]   
+Do the following:   
+- Explain the error massage.   
+- Find the root cause of the issue.   
+- Suggest how to fix it.   
+[ SQL Query GOES HERE ]
+
+#6 Explain the Result   
+[PROMPT...]   
+I didn't understand the result of the following SQL Server query.   
+Do the following:   
+- Break down how SQL processes the query step by step.   
+- Explaining each stage and how the result is formed.   
+[ SQL Query GOES HERE ]
+
+#7 Styling & Formatting   
+[PROMPT...]   
+The following SQL Server query hard to understand.   
+Do the following:   
+- Restyle the code to make it easier to read.   
+- Align column aliases.   
+- Keep it compact - do not introduce unnecessary new lines.   
+- Ensure the formatting follows best practices.   
+[ SQL Query GOES HERE ]
+
+#8 Documentations & Comments   
+[PROMPT...]   
+The following SQL Server query lacks comments and documentation.   
+Do the following:   
+- Insert a leading comment at the start of the query describing its overall purpose.   
+- Add comments only where clarification is necessary, avoiding obvious statements.   
+- Create a separate document explaining the business rules implemented by the query.   
+- Create another separate document describing how the query works.   
+[ SQL Query GOES HERE ]
+
+#9 Improve Database DDL   
+[PROMPT...]   
+The following SQL Server DDL Script has to be optimized.   
+Do the following:   
+- Naming: Check the consistency of table/column names, prefixes, standards.   
+- Data Types: Ensure data types are appropriate and optimized.   
+- Integrity: Verify the integrity of primary keys and foreign keys.   
+- Indexes: Check that indexes are sufficient and avoid redundancy.   
+- Normalization: Ensure proper normalization and avoid redundancy.   
+[ SQL DDL GOES HERE ]
+
+
+#10 Generate Test Dataset
+[PROMPT...]
+I need dataset for testing for the following SQL Server DDL
+Do the following:
+- Generate test dataset as Insert statements.
+- Dataset should be realstic.
+- Keep the dataset small.
+- Ensure all primary/foreign key relationships are valid (use matching IDs).
+- Dont introduce any Null values.
+[ SQL DDL GOES HERE ]
+
+#11 Create SQL Course   
+[PROMPT...]   
+Create a comprehensive SQL course with a detailed roadmap and agenda.   
+Do the following:   
+- Start with SQL fundamentals and advance to complex topics.   
+- Make it beginner-friendly.   
+- Include topics relevant to data analytics.   
+- Focus on real-world data analytics use cases and scenarios.
+
+#12 Understand SQL Concept   
+[PROMPT...]   
+I want detailed explanation about about SQL Window Functions.   
+Do the following:   
+- Explain what Window Functions are.   
+- Give an analogy.   
+- Describe why we need them and when to use them.   
+- Explain the syntax.   
+- Provide simple examples.   
+- List the top 3 use cases.
+
+#13 Comparing SQL Concepts   
+[PROMPT...]   
+I want to understand the differences between SQL Windows and GROUP BY.   
+Do the following:   
+- Explain the key differences between the two concepts.   
+- Describe when to use each concept, with examples.   
+- Provide the pros and cons of each concept.   
+- Summarize the comparison in a clear side-by-side table.
+
+#14 Practice SQL   
+[PROMPT...]   
+Act as an SQL trainer and help me practice SQL Window Functions.   
+Do the following:   
+- Make it interactive Practicing, you provide task and give solution.   
+- Provide a sample dataset.   
+- Give SQL tasks that gradually increase in difficulty.   
+- Act as an SQL Server and show the results of my queries.   
+- Review my queries, provide feedback, and suggest improvements.
+
+#15 Prepare for a SQL Interview   
+[PROMPT...]   
+Act as Interviewer and prepare me for a SQL interview.   
+Do the following:   
+- Ask common SQL interview questions.   
+- Make it interactive Practicing, you provide question and give answer.   
+- Gradually progress to advanced topics.   
+- Evaluate my answer and give me a feedback.
+
+-Data warehouse Project::
+data warehousing means how to organize, structure and prepare  your data 
+        -ETL(extract,transform,load)/ELT processing
+        -Data Architecture
+        -Data Intrgration
+        -Data Cleansing
+        -Data Load
+        -Data Modeling
+Exploratory Data Analysis(EDA)
+Understand Data
+        -basic queries
+        -data Profiling
+        -simple aggregations
+        -Subquery
+Advanced Data Anlytics
+answer Business queries
+        -Complex Queries
+        -Window Functions
+        -CTE
+        -subqueries
+        -reports
+
+Data Warehousing is the process of collecting, storing, and organizing data from multiple 
+sources in one central location so businesses can analyze historical data and make better decisions.
+
+data warehouse: a subject-oriented, integrated,time-varient, and non-volatile collection of data in support
+of managements decision making process.
+subject-oriented means related to the sales, customers
+integrated- multiple sources combine multiple tables
+
+ETL Processing-we spent 90% of time to build ETL for data warehouse 
+our data is exist in Source system and we move it in target
+to specify which data we load from the source
+extract- we indentify the data from the source system
+transform - we do lot of things such as data intregation, cleanising,normalization,formating
+load-new data inserted in Target system
+
+Extractions
+    -Extraction Methods
+        -Pull Extraction
+        -Push Extraction
+    -Extract Types
+        -Full Extraction
+        -Increamental Extraction
+    -Extract Techniques
+        -web scraping
+        -CDc-chnage data capture
+        -event based streaming
+        -API calls
+        -File parsing
+        -Database Querying
+        -manual Data Extraction
+Transformation
+    -Data Enrichment
+    -Data Intrgration
+    -derived columns
+    -Data cleaning
+        -Remove duplicate
+        -outlier detection
+        -Data filterig
+        -handling missing data
+        -handling invalid values
+        -handling unwanted spaces
+        -data type casting
+    -Data normalization and standardization
+    -business rules and logic
+    -Data Aggregations
+
+Load
+    -Processing types
+        -Batch Processing
+        -Streaming Processing
+    -Load methods
+        -Full load
+            -truncate,insert
+            -Upsert-update and insert
+            -drop,create,insert
+        -Incremental Load
+            -upsert
+            -append
+            -merge
+    -slowly changing dimensions(scd)
+        -SCD o-no historization
+        -scd1 -overwrite
+        -scd2-historization
+        -scd...
+
+--Project planing is key of success of project
+--we did planing in Notion .Io 
+
+--Project Requirements:
+
+Building the Data Warehouse (Data Engineering)   
+    Objective
+        Develop a modern data warehouse using SQL Server to consolidate sales data, 
+        enabling analytical reporting and informed decision-making. 
+    
+    Specifications   
+        - Data Sources: Import data from two source systems (ERP and CRM) provided as CSV files.   
+        - Data Quality: Cleanse and resolve data quality issues prior to analysis.   
+        - Integration: Combine both sources into a single, user-friendly data model designed for 
+        analytical queries.   
+        - Scope: Focus on the latest dataset only; historization of data is not required.   
+        - Documentation: Provide clear documentation of the data model to support both business 
+        stakeholders and analytics 
+        
+BI: Analytics & Reporting (Data Analysis)   
+    Objective
+        Develop SQL-based analytics to deliver detailed insights into:   
+            - Customer Behavior
+--Design the Data Architecture
+-choose the right approch
+-Data Architecture Types:
+    1.Data warehouse
+    2.Data Lake- multiple type of data such as imgies, logs ,table but it less organize 
+    3.Data LakeHouse-modern way
+    4.data mesh
+
+Data Warehouse Approaches
+-inmon --more databases(sources) 
+       --staging(row data is landing)
+       --2nd layer(organize EDW-enterprise data warehouse)-3NF
+       --3rd layer-data marts-take small subset of the data warehouse nd design it in a way that 
+         is ready to be consumed from reporting and focus on only one topic like customer salesor products
+       --shows on BI 
+-kimball--more databases(sources) 
+        --staging(row data is landing)
+        --Data Marts -direct jump here from staging
+        --reporting on BI
+-data Vault--more databases(sources) 
+           --staging(row data is landing)
+           --raw vault-original data
+           --business vault-data based on business requirement
+           --3rd layer-data marts-take small subset of the data warehouse nd design it in a way that 
+             is ready to be consumed from reporting and focus on only one topic like customer salesor products
+           --shows on BI 
+-Medallion Architecture:
+           --sources
+           --bronze(stagging layer)
+           --silver(tranformation,data cleaning)
+           --gold(build different type of objects)
+
+
+Design the data architecture
+Design The layers:
+1.bronze layer
+    --Definition-row ,unprocessed Data as -is form sources
+    --Objective-Traceability and debugging
+    --Object Type--table
+    --load method-Full load (truncate and insert)
+    --Data Transformation:None-not change anything as it is
+    --data modeling:None as it is
+    --Target Audience:Data engineer
+2.silver layer
+    --Definition-clean and standardized Data
+    --Objective-(interemediate layer)prepare data for analysis
+    --Object Type--table
+    --load method-Full load (truncate and insert)
+    --Data Transformation:Data cleaning,derived columns,data enrichment
+                          Data stanndardization,data normalization
+    --data modeling:None as it is
+    --Target Audience:Data engineer,data Anlysts
+3.gold layer
+    --Definition-business ready data
+    --Objective-provide Data to be consumed for reporting and analytics
+    --Object Type--views
+    --load method-None
+    --Data Transformation:Data Integration,Data Aggregation,Business Logic and rules
+    --data modeling:Start Schema,Aggregated Objects , Flat Tables
+    --Target Audience:Business Users,data Anlysts
+
+Desgin the data Architecture
+Draw the Architecture -using Draw.Io--this done
+
+Naming Conventions:
+Set of rules or Guidelines for Naming anything in the project
+weather it is DataBase,Schema,Tables,Stored Procedures
+
+Now Create git respository
+Readme.Md--md stand for markdown--this steps is done
+
+Porject Initialization
+--Create Database and schemas
+--create Database 'Datawarehouse'*/
+/*
+===============================================================
+Create Database and Schemas
+===============================================================
+Script Purpose:
+    This scripts Creates a New database named 'DataWarehouse' After checking if it already exists.
+    if the databases exists, it is dropped and recreated. Additionally, the script sets up three schemas within
+    the database:'bronze','silver','gold'
+Warning:
+    Running this script will drop the entire datawarehouse database if it exists.
+    All data in the database will be permanently deleted. Proceed with caution and ensure you have proper 
+    backups before running this script.
+ */
+use master
+go
+if exists(select 1 from sys.databases where name='Datawarehouse')
+begin
+    alter database Datawarehouse set single_user with rollback immediate
+    drop database Datawarehouse
+end
+go
+--here we create the Datawarehouse database
+create database Datawarehouse
+go
+use Datawarehouse;
+go
+--create some schemas
+create schema bronze;
+go
+create schema silver;
+go--when we run mutiple query together we need to used go so we can run togther
+create schema gold;
+go
+--project Intailization
+---Now commit code in git Repo
+
